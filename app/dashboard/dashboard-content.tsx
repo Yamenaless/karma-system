@@ -95,6 +95,7 @@ export function DashboardContent() {
 
   // Calculate totals
   const totalCostPriceInTL = transformationTotals.totalCostPriceInDollar * dollarToTLRate
+  const netTotal = transformationTotals.totalSellingPrice + totalParanizSales - totalExpenses
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -177,6 +178,19 @@ export function DashboardContent() {
               <p className="text-sm font-medium text-slate-600">Total Paraniz Sales Amount</p>
               <Badge variant="default" className="text-xl px-5 py-3 w-full justify-center">
                 {totalParanizSales.toFixed(2)}
+              </Badge>
+            </div>
+          </div>
+          
+          {/* Net Total Calculation */}
+          <div className="mt-6 pt-6 border-t-2 border-slate-200">
+            <div className="space-y-3 p-6 rounded-xl bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 border-2 border-purple-300 shadow-lg">
+              <p className="text-base font-semibold text-slate-700 mb-2">Net Total</p>
+              <p className="text-xs text-slate-600 mb-4">
+                (Total Selling Price + Total Paraniz Sales Amount - Total Expenses)
+              </p>
+              <Badge variant="default" className="text-2xl px-6 py-4 w-full justify-center bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold">
+                {netTotal.toFixed(2)}
               </Badge>
             </div>
           </div>
