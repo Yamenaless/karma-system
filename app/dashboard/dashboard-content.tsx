@@ -95,7 +95,20 @@ export function DashboardContent() {
 
   // Calculate totals
   const totalCostPriceInTL = transformationTotals.totalCostPriceInDollar * dollarToTLRate
-  const netTotal = transformationTotals.totalSellingPrice + totalParanizSales - totalExpenses
+  const netTotal = transformationTotals.totalSellingPrice + totalParanizSales
+  
+  // Calculate net total with cash and expenses: netTotal + cashInBoxYesterday - totalExpenses
+  const netTotalWithCashAndExpenses = netTotal + cashInBoxYesterday - totalExpenses
+  
+  // Calculate cash difference: cashInBoxToday - netTotalWithCashAndExpenses
+  // If result is negative, it means shortage (نقص)
+  // If result is positive, it means excess (زيادة)
+  const cashDifference = cashInBoxToday - netTotalWithCashAndExpenses
+  const formattedCashDifference = cashDifference === 0 
+    ? "0" 
+    : cashDifference > 0 
+    ? `+${cashDifference.toFixed(2)}` 
+    : `${cashDifference.toFixed(2)}`
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -187,11 +200,26 @@ export function DashboardContent() {
             <div className="space-y-3 p-6 rounded-xl bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 border-2 border-purple-300 shadow-lg">
               <p className="text-base font-semibold text-slate-700 mb-2">Net Total</p>
               <p className="text-xs text-slate-600 mb-4">
-                (Total Selling Price + Total Paraniz Sales Amount - Total Expenses)
+                (Total Selling Price + Total Paraniz Sales Amount)
               </p>
               <Badge variant="default" className="text-2xl px-6 py-4 w-full justify-center bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold">
                 {netTotal.toFixed(2)}
               </Badge>
+            </div>
+            
+            {/* Net Total with Cash and Expenses */}
+            <div className="mt-6 pt-6 border-t-2 border-slate-200">
+              <div className="space-y-3 p-6 rounded-xl bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50 border-2 border-teal-300 shadow-lg">
+                <p className="text-base font-semibold text-slate-700 mb-2">
+                  Net Total with Cash and Expenses
+                </p>
+                <p className="text-xs text-slate-600 mb-4">
+                  (Net Total + Cash In Box Yesterday - Total Expenses)
+                </p>
+                <Badge variant="default" className="text-2xl px-6 py-4 w-full justify-center bg-gradient-to-r from-teal-600 to-cyan-600 text-white font-bold">
+                  {netTotalWithCashAndExpenses.toFixed(2)}
+                </Badge>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -236,6 +264,32 @@ export function DashboardContent() {
               </div>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Cash Difference Result */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="space-y-3 p-6 rounded-xl bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-50 border-2 border-slate-300 shadow-lg">
+            <p className="text-base font-semibold text-slate-700 mb-2">
+              الفرق النقدي (Cash Difference)
+            </p>
+            <p className="text-xs text-slate-600 mb-4">
+              (Cash In Box Today - Net Total with Cash and Expenses)
+            </p>
+            <Badge 
+              variant="default" 
+              className={`text-2xl px-6 py-4 w-full justify-center font-bold ${
+                cashDifference === 0 
+                  ? "bg-gradient-to-r from-gray-500 to-slate-600 text-white" 
+                  : cashDifference > 0 
+                  ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white" 
+                  : "bg-gradient-to-r from-red-600 to-rose-600 text-white"
+              }`}
+            >
+              {formattedCashDifference}
+            </Badge>
+          </div>
         </CardContent>
       </Card>
     </div>
