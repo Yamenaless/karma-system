@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Receipt, FileText, ArrowRightLeft } from "lucide-react"
+import { LayoutDashboard, Receipt, FileText, ArrowRightLeft, CreditCard } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function Navbar() {
@@ -29,6 +29,11 @@ export function Navbar() {
       href: "/paraniz",
       label: "Paraniz",
       icon: FileText,
+    },
+    {
+      href: "/debts",
+      label: "Debts",
+      icon: CreditCard,
     },
   ]
 

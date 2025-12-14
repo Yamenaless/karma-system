@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -11,9 +12,12 @@ import { getTransformationTotalsByDate } from "@/app/actions/products"
 import { getCashByDate, getPreviousDayCash, upsertCash } from "@/app/actions/cash"
 import { getTotalExpensesByDate } from "@/app/actions/expenses"
 import { getParanizSalesTotalByDate } from "@/app/actions/paraniz"
-import { DollarSign } from "lucide-react"
+import { getUnpaidDebts } from "@/app/actions/debts"
+import { Debt } from "@/types/database"
+import { DollarSign, AlertCircle, X } from "lucide-react"
 
 export function DashboardContent() {
+  const router = useRouter()
   const [date, setDate] = useState(() => {
     const today = new Date()
     return today.toISOString().split("T")[0]
@@ -29,6 +33,8 @@ export function DashboardContent() {
     totalSellingPrice: 0,
     totalCostPriceInDollar: 0,
   })
+  const [unpaidDebts, setUnpaidDebts] = useState<Debt[]>([])
+  const [reminderDialogOpen, setReminderDialogOpen] = useState(false)
 
   const loadCash = async () => {
     setCashLoading(true)
@@ -74,11 +80,23 @@ export function DashboardContent() {
     }
   }
 
+  const loadUnpaidDebts = async () => {
+    const result = await getUnpaidDebts()
+    if (result.success && result.data) {
+      setUnpaidDebts(result.data)
+      // Auto-open reminder dialog if there are unpaid debts
+      if (result.data.length > 0) {
+        setReminderDialogOpen(true)
+      }
+    }
+  }
+
   useEffect(() => {
     loadCash()
     loadTotalExpenses()
     loadTransformationTotals()
     loadParanizSalesTotal()
+    loadUnpaidDebts()
   }, [date])
 
 
@@ -110,6 +128,9 @@ export function DashboardContent() {
     ? `+${cashDifference.toFixed(2)}` 
     : `${cashDifference.toFixed(2)}`
 
+  // Calculate total unpaid amount
+  const totalUnpaidAmount = unpaidDebts.reduce((sum, debt) => sum + (debt.amount || 0), 0)
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       {/* Header */}
@@ -120,12 +141,85 @@ export function DashboardContent() {
             Date: <span className="font-semibold">{date}</span>
           </p>
         </div>
-        <Input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-auto"
-        />
+        <div className="flex items-center gap-4">
+          {unpaidDebts.length > 0 && (
+            <Dialog open={reminderDialogOpen} onOpenChange={setReminderDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="destructive" className="gap-2">
+                  <AlertCircle className="h-4 w-4" />
+                  Unpaid Debts ({unpaidDebts.length})
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-red-600" />
+                    Unpaid Debts Reminder
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="p-4 rounded-lg bg-red-50 border-2 border-red-200">
+                    <p className="text-sm font-semibold text-red-900 mb-2">
+                      Total Unpaid Amount: <span className="text-lg">{totalUnpaidAmount.toFixed(2)}</span>
+                    </p>
+                    <p className="text-xs text-red-700">
+                      You have {unpaidDebts.length} unpaid debt{unpaidDebts.length > 1 ? "s" : ""} that need attention.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-slate-700">Unpaid Debts List:</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
+                            <th className="text-left p-3 font-semibold text-slate-700 text-sm">Date</th>
+                            <th className="text-left p-3 font-semibold text-slate-700 text-sm">Customer</th>
+                            <th className="text-left p-3 font-semibold text-slate-700 text-sm">Product</th>
+                            <th className="text-right p-3 font-semibold text-slate-700 text-sm">Cost</th>
+                            <th className="text-right p-3 font-semibold text-slate-700 text-sm">Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {unpaidDebts.map((debt) => (
+                            <tr key={debt.id} className="border-b border-slate-100 hover:bg-slate-50">
+                              <td className="p-3 text-sm text-slate-600">{debt.date}</td>
+                              <td className="p-3 text-sm font-medium text-slate-900">{debt.customer_name}</td>
+                              <td className="p-3 text-sm text-slate-700">{debt.product_name}</td>
+                              <td className="text-right p-3 text-sm text-slate-700">${(debt.product_cost || 0).toFixed(2)}</td>
+                              <td className="text-right p-3 text-sm font-semibold text-slate-900">{debt.amount.toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-4 border-t">
+                    <Button
+                      variant="outline"
+                      onClick={() => setReminderDialogOpen(false)}
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setReminderDialogOpen(false)
+                        router.push("/debts")
+                      }}
+                    >
+                      Go to Debts Page
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+          <Input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-auto"
+          />
+        </div>
       </div>
 
       {/* Dollar to TL Rate Field */}

@@ -73,3 +73,22 @@ export interface ParanizSaleFormData {
   subscriptionNumber: string
 }
 
+export interface Debt {
+  id: string
+  date: string
+  customer_name: string
+  product_name: string
+  product_cost: number
+  amount: number
+  is_paid: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface DebtFormData {
+  customer_name: string
+  product_name: string
+  product_cost: number
+  amount: number
+}
+
