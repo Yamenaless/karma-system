@@ -20,6 +20,7 @@ export function TransformationsContent() {
 
   const [transformations, setTransformations] = useState<DailyTransformation[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [editingTransformation, setEditingTransformation] = useState<DailyTransformation | null>(null)
@@ -33,11 +34,23 @@ export function TransformationsContent() {
 
   const loadTransformations = async () => {
     setLoading(true)
-    const result = await getTransformationsByDate(date)
-    if (result.success && result.data) {
-      setTransformations(result.data)
+    setError(null)
+    try {
+      const result = await getTransformationsByDate(date)
+      if (result.success) {
+        setTransformations(result.data || [])
+      } else {
+        console.error("Error loading transformations:", result.error)
+        setError(result.error || "Failed to load transformations")
+        setTransformations([])
+      }
+    } catch (error) {
+      console.error("Failed to load transformations:", error)
+      setError("An unexpected error occurred while loading transformations")
+      setTransformations([])
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   useEffect(() => {
@@ -294,6 +307,14 @@ export function TransformationsContent() {
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading transformations..." />
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-8 gap-2">
+              <p className="text-red-600 font-semibold">Error loading transformations</p>
+              <p className="text-sm text-muted-foreground">{error}</p>
+              <Button onClick={loadTransformations} variant="outline" className="mt-2">
+                Retry
+              </Button>
             </div>
           ) : transformations.length === 0 ? (
             <p className="text-muted-foreground">No transformations for this date.</p>
