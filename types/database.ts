@@ -92,3 +92,36 @@ export interface DebtFormData {
   amount: number
 }
 
+export interface ProductType {
+  id: string
+  name: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ProductTypeFormData {
+  name: string
+}
+
+export interface KarmaProduct {
+  id: string
+  name: string
+  description: string | null
+  price: number
+  product_cost: number
+  code: string
+  type_id: string
+  type?: ProductType
+  created_at: string
+  updated_at: string
+}
+
+export interface KarmaProductFormData {
+  name: string
+  description?: string
+  price: number
+  product_cost: number
+  code: string
+  type_id: string
+}
+

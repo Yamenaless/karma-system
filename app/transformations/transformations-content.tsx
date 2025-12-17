@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { addTransformation, getTransformationsByDate, updateTransformation, deleteTransformation } from "@/app/actions/products"
 import { DailyTransformation, TransformationFormData } from "@/types/database"
 import { Plus, Pencil, Trash2, DollarSign } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 
 export function TransformationsContent() {
   const [date, setDate] = useState(() => {
@@ -110,12 +111,12 @@ export function TransformationsContent() {
   )
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Daily Transformations</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold">Daily Transformations</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Date: <span className="font-semibold">{date}</span>
           </p>
         </div>
@@ -123,7 +124,7 @@ export function TransformationsContent() {
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-auto"
+          className="w-full sm:w-auto"
         />
       </div>
 
@@ -135,12 +136,12 @@ export function TransformationsContent() {
             Add Transformation
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle>Add New Transformation</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Add New Transformation</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleAddTransformation} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -192,15 +193,16 @@ export function TransformationsContent() {
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button type="submit">Save Transformation</Button>
+              <Button type="submit" className="w-full sm:w-auto">Save Transformation</Button>
             </div>
           </form>
         </DialogContent>
@@ -208,12 +210,12 @@ export function TransformationsContent() {
 
       {/* Edit Transformation Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle>Edit Transformation</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Edit Transformation</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdateTransformation} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-name">Name</Label>
                 <Input
@@ -265,7 +267,7 @@ export function TransformationsContent() {
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -273,10 +275,11 @@ export function TransformationsContent() {
                   setEditDialogOpen(false)
                   setEditingTransformation(null)
                 }}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button type="submit">Update Transformation</Button>
+              <Button type="submit" className="w-full sm:w-auto">Update Transformation</Button>
             </div>
           </form>
         </DialogContent>
@@ -289,47 +292,49 @@ export function TransformationsContent() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p>Loading...</p>
+            <div className="flex items-center justify-center py-8">
+              <Spinner size="lg" text="Loading transformations..." />
+            </div>
           ) : transformations.length === 0 ? (
             <p className="text-muted-foreground">No transformations for this date.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-                    <th className="text-left p-4 font-semibold text-slate-700">Name</th>
-                    <th className="text-right p-4 font-semibold text-slate-700">Quantity</th>
-                    <th className="text-right p-4 font-semibold text-slate-700">Dollar Rate</th>
-                    <th className="text-right p-4 font-semibold text-slate-700">Selling Price</th>
-                    <th className="text-center p-4 font-semibold text-slate-700">Actions</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Quantity</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Dollar Rate</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Selling Price</th>
+                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {transformations.map((transformation) => (
                     <tr key={transformation.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
-                      <td className="p-4 font-medium text-slate-900">{transformation.name}</td>
-                      <td className="text-right p-4 text-slate-700">{transformation.quantity.toFixed(2)}</td>
-                      <td className="text-right p-4 text-slate-700">{transformation.dollarRate.toFixed(2)}</td>
-                      <td className="text-right p-4 font-semibold text-slate-900">{transformation.sellingPrice.toFixed(2)}</td>
-                      <td className="text-center p-4">
-                        <div className="flex justify-center gap-2">
+                      <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{transformation.name}</td>
+                      <td className="text-right p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{transformation.quantity.toFixed(2)}</td>
+                      <td className="text-right p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{transformation.dollarRate.toFixed(2)}</td>
+                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{transformation.sellingPrice.toFixed(2)}</td>
+                      <td className="text-center p-2 sm:p-4">
+                        <div className="flex justify-center gap-1 sm:gap-2">
                           <Button
                             variant="outline"
                             size="icon"
                             onClick={() => handleEditClick(transformation)}
-                            className="h-9 w-9 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200"
+                            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200"
                             title="Edit transformation"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                           <Button
                             variant="outline"
                             size="icon"
                             onClick={() => handleDeleteTransformation(transformation.id)}
-                            className="h-9 w-9 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200"
+                            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200"
                             title="Delete transformation"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                         </div>
                       </td>
@@ -348,18 +353,18 @@ export function TransformationsContent() {
           <CardTitle>Daily Totals</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
-              <p className="text-sm font-medium text-slate-600">Total Selling Price</p>
-              <Badge variant="default" className="text-xl px-5 py-3 w-full justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
+              <p className="text-xs sm:text-sm font-medium text-slate-600">Total Selling Price</p>
+              <Badge variant="default" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
                 {totalSellingPrice.toFixed(2)}
               </Badge>
             </div>
-            <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-2 border-amber-300 shadow-md">
-              <p className="text-sm font-medium text-slate-700">Total Cost Price (Dollar)</p>
-              <div className="flex items-center justify-center gap-2 bg-white/60 rounded-lg p-3 border border-amber-200">
-                <DollarSign className="h-6 w-6 text-amber-600" />
-                <Badge variant="outline" className="text-xl px-5 py-3 border-2 border-amber-400 bg-amber-50 text-amber-900 font-bold">
+            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-2 border-amber-300 shadow-md">
+              <p className="text-xs sm:text-sm font-medium text-slate-700">Total Cost Price (Dollar)</p>
+              <div className="flex items-center justify-center gap-2 bg-white/60 rounded-lg p-2 sm:p-3 border border-amber-200">
+                <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" />
+                <Badge variant="outline" className="text-lg sm:text-xl px-3 sm:px-5 py-2 sm:py-3 border-2 border-amber-400 bg-amber-50 text-amber-900 font-bold">
                   {totalCostPriceInDollar.toFixed(2)}
                 </Badge>
               </div>

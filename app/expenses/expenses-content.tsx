@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { addExpense, getExpensesByDate, updateExpense, deleteExpense } from "@/app/actions/expenses"
 import { DailyExpense, ExpenseFormData } from "@/types/database"
 import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 
 export function ExpensesContent() {
   const [date, setDate] = useState(() => {
@@ -98,12 +99,12 @@ export function ExpensesContent() {
   const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0)
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Daily Expenses</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold">Daily Expenses</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Date: <span className="font-semibold">{date}</span>
           </p>
         </div>
@@ -111,7 +112,7 @@ export function ExpensesContent() {
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-auto"
+          className="w-full sm:w-auto"
         />
       </div>
 
@@ -123,9 +124,9 @@ export function ExpensesContent() {
             Add Expense
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle>Add New Expense</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Add New Expense</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleAddExpense} className="space-y-4">
             <div className="space-y-2">
@@ -152,15 +153,16 @@ export function ExpensesContent() {
                 required
               />
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button type="submit">Save Expense</Button>
+              <Button type="submit" className="w-full sm:w-auto">Save Expense</Button>
             </div>
           </form>
         </DialogContent>
@@ -168,9 +170,9 @@ export function ExpensesContent() {
 
       {/* Edit Expense Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent>
+        <DialogContent className="w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle>Edit Expense</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Edit Expense</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdateExpense} className="space-y-4">
             <div className="space-y-2">
@@ -197,7 +199,7 @@ export function ExpensesContent() {
                 required
               />
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -205,10 +207,11 @@ export function ExpensesContent() {
                   setEditDialogOpen(false)
                   setEditingExpense(null)
                 }}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button type="submit">Update Expense</Button>
+              <Button type="submit" className="w-full sm:w-auto">Update Expense</Button>
             </div>
           </form>
         </DialogContent>
@@ -221,43 +224,45 @@ export function ExpensesContent() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p>Loading...</p>
+            <div className="flex items-center justify-center py-8">
+              <Spinner size="lg" text="Loading expenses..." />
+            </div>
           ) : expenses.length === 0 ? (
             <p className="text-muted-foreground">No expenses for this date.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse min-w-[400px]">
                 <thead>
                   <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-                    <th className="text-left p-4 font-semibold text-slate-700">Name</th>
-                    <th className="text-right p-4 font-semibold text-slate-700">Amount</th>
-                    <th className="text-center p-4 font-semibold text-slate-700">Actions</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Amount</th>
+                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {expenses.map((expense) => (
                     <tr key={expense.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
-                      <td className="p-4 font-medium text-slate-900">{expense.name}</td>
-                      <td className="text-right p-4 font-semibold text-slate-900">{expense.amount.toFixed(2)}</td>
-                      <td className="text-center p-4">
-                        <div className="flex justify-center gap-2">
+                      <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{expense.name}</td>
+                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{expense.amount.toFixed(2)}</td>
+                      <td className="text-center p-2 sm:p-4">
+                        <div className="flex justify-center gap-1 sm:gap-2">
                           <Button
                             variant="outline"
                             size="icon"
                             onClick={() => handleEditClick(expense)}
-                            className="h-9 w-9 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200"
+                            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200"
                             title="Edit expense"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                           <Button
                             variant="outline"
                             size="icon"
                             onClick={() => handleDeleteExpense(expense.id)}
-                            className="h-9 w-9 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200"
+                            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200"
                             title="Delete expense"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                         </div>
                       </td>
@@ -277,7 +282,7 @@ export function ExpensesContent() {
         </CardHeader>
         <CardContent>
           <div className="flex justify-center">
-            <Badge variant="default" className="text-lg px-6 py-3">
+            <Badge variant="default" className="text-base sm:text-lg px-4 sm:px-6 py-2 sm:py-3">
               {totalExpenses.toFixed(2)}
             </Badge>
           </div>

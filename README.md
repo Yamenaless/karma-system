@@ -4,7 +4,9 @@ A daily accounting system built with Next.js, Supabase, and shadcn/ui.
 
 ## Features
 
-- Daily product management with full CRUD operations
+- Daily transformation management with full CRUD operations
+- Karma products catalog with product types management
+- Product types can be added, edited, or removed from the frontend
 - Real-time totals calculation
 - Cash in box tracking with automatic date-based logic
 - Responsive UI built with shadcn/ui components
@@ -21,7 +23,8 @@ npm install
    - Create a new Supabase project
    - Go to SQL Editor in your Supabase dashboard
    - Run the SQL migration file: `supabase-migration.sql`
-   - This will create the `daily_products` and `daily_cash` tables with proper indexes and RLS policies
+   - If you have an existing database, also run `rename-daily-products-migration.sql` to rename `daily_products` to `daily_transformations` and create the new `karma_products` and `products_types` tables
+   - This will create the `daily_transformations`, `daily_cash`, `karma_products`, and `products_types` tables with proper indexes and RLS policies
 
 3. Configure environment variables:
    - Copy `.env.local.example` to `.env.local`

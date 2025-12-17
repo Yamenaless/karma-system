@@ -9,7 +9,7 @@ export async function addTransformation(date: string, data: TransformationFormDa
   
   // Map camelCase to snake_case to match database schema
   const { error } = await supabase
-    .from("daily_products")
+    .from("daily_transformations")
     .insert({
       date,
       product_name: data.name,
@@ -31,7 +31,7 @@ export async function getTransformationsByDate(date: string) {
   const supabase = createServerClient()
   
   const { data, error } = await supabase
-    .from("daily_products")
+    .from("daily_transformations")
     .select("*")
     .eq("date", date)
     .order("created_at", { ascending: false })
@@ -59,7 +59,7 @@ export async function updateTransformation(id: string, data: TransformationFormD
   
   // Map camelCase to snake_case to match database schema
   const { error } = await supabase
-    .from("daily_products")
+    .from("daily_transformations")
     .update({
       product_name: data.name,
       quantity: data.quantity,
@@ -81,7 +81,7 @@ export async function getTransformationTotalsByDate(date: string) {
   const supabase = createServerClient()
   
   const { data, error } = await supabase
-    .from("daily_products")
+    .from("daily_transformations")
     .select("selling_price, dollar_rate, quantity")
     .eq("date", date)
 
@@ -107,7 +107,7 @@ export async function deleteTransformation(id: string) {
   const supabase = createServerClient()
   
   const { error } = await supabase
-    .from("daily_products")
+    .from("daily_transformations")
     .delete()
     .eq("id", id)
 

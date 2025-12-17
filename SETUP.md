@@ -24,9 +24,12 @@
    - In your Supabase dashboard, go to SQL Editor
    - Copy and paste the contents of `supabase-migration.sql`
    - Click "Run" to execute the migration
+   - If you have an existing database with `daily_products` table, also run `rename-daily-products-migration.sql` to rename it to `daily_transformations`
    - This will create:
-     - `daily_products` table
+     - `daily_transformations` table (or `daily_products` if running initial migration)
      - `daily_cash` table
+     - `karma_products` table
+     - `products_types` table
      - Required indexes
      - Row Level Security policies
 
@@ -40,14 +43,26 @@
 
 ## Database Schema
 
-### daily_products
-- Stores product entries for each day
-- Columns: id, date, product_name, quantity, cost_price_tl, dollar_rate, selling_price, debt, withdraw, paraniz_kontor, paraniz_fatura, created_at
+### daily_transformations
+- Stores transformation entries for each day (renamed from daily_products)
+- Columns: id, date, product_name, quantity, dollar_rate, selling_price, withdraw, created_at
 
 ### daily_cash
 - Stores cash in box data for each day
-- Columns: id, date, cash_in_box_yesterday, cash_in_box_today, created_at
+- Columns: id, date, cash_in_box_yesterday, cash_in_box_today, dollar_to_tl_rate, created_at
 - The `date` column is unique (one record per day)
+
+### karma_products
+- Stores product catalog information
+- Columns: id, name, description, price, product_cost, code, type_id, created_at, updated_at
+- Required fields: name, price, product_cost, code, type_id
+- The `code` column is unique
+
+### products_types
+- Stores product type definitions (can be managed from frontend)
+- Columns: id, name, created_at, updated_at
+- The `name` column is unique
+- Initial types: USB, MICRO, TYPEC, LIGHTIN_TO_TYPEC, TYPEC_TO_TYPEC
 
 ## Notes
 

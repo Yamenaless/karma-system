@@ -16,6 +16,7 @@ import {
 } from "@/app/actions/paraniz"
 import { DailyParanizSale, ParanizSaleFormData } from "@/types/database"
 import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 
 export function ParanizContent() {
   const [date, setDate] = useState(() => {
@@ -125,12 +126,12 @@ export function ParanizContent() {
   const totalParanizCost = filteredSales.reduce((sum, s) => sum + (s.cost || 0), 0)
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Daily Paraniz</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold">Daily Paraniz</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Date: <span className="font-semibold">{date}</span>
           </p>
         </div>
@@ -138,7 +139,7 @@ export function ParanizContent() {
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-auto"
+          className="w-full sm:w-auto"
         />
       </div>
 
@@ -150,9 +151,9 @@ export function ParanizContent() {
             Add Paraniz Sale
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle>Add New Paraniz Sale</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Add New Paraniz Sale</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleAddSale} className="space-y-4">
             <div className="space-y-2">
@@ -166,7 +167,7 @@ export function ParanizContent() {
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="sale-amount">Amount</Label>
                 <Input
@@ -218,15 +219,16 @@ export function ParanizContent() {
                 }
               />
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setSalesDialogOpen(false)}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button type="submit">Save Sale</Button>
+              <Button type="submit" className="w-full sm:w-auto">Save Sale</Button>
             </div>
           </form>
         </DialogContent>
@@ -234,9 +236,9 @@ export function ParanizContent() {
 
       {/* Edit Paraniz Sale Dialog */}
       <Dialog open={editSalesDialogOpen} onOpenChange={setEditSalesDialogOpen}>
-        <DialogContent>
+        <DialogContent className="w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle>Edit Paraniz Sale</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Edit Paraniz Sale</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdateSale} className="space-y-4">
             <div className="space-y-2">
@@ -250,7 +252,7 @@ export function ParanizContent() {
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-sale-amount">Amount</Label>
                 <Input
@@ -302,7 +304,7 @@ export function ParanizContent() {
                 }
               />
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -310,10 +312,11 @@ export function ParanizContent() {
                   setEditSalesDialogOpen(false)
                   setEditingSale(null)
                 }}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button type="submit">Update Sale</Button>
+              <Button type="submit" className="w-full sm:w-auto">Update Sale</Button>
             </div>
           </form>
         </DialogContent>
@@ -322,13 +325,14 @@ export function ParanizContent() {
       {/* Paraniz Sales Table */}
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Paraniz Sales</CardTitle>
-            <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+            <CardTitle className="text-lg sm:text-xl">Paraniz Sales</CardTitle>
+            <div className="flex gap-2 w-full sm:w-auto">
               <Button
                 variant={categoryFilter === "ALL" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setCategoryFilter("ALL")}
+                className="flex-1 sm:flex-initial text-xs sm:text-sm"
               >
                 All
               </Button>
@@ -336,6 +340,7 @@ export function ParanizContent() {
                 variant={categoryFilter === "FATURA" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setCategoryFilter("FATURA")}
+                className="flex-1 sm:flex-initial text-xs sm:text-sm"
               >
                 FATURA
               </Button>
@@ -343,6 +348,7 @@ export function ParanizContent() {
                 variant={categoryFilter === "KONTOR" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setCategoryFilter("KONTOR")}
+                className="flex-1 sm:flex-initial text-xs sm:text-sm"
               >
                 KONTOR
               </Button>
@@ -351,53 +357,55 @@ export function ParanizContent() {
         </CardHeader>
         <CardContent>
           {salesLoading ? (
-            <p>Loading...</p>
+            <div className="flex items-center justify-center py-8">
+              <Spinner size="lg" text="Loading paraniz sales..." />
+            </div>
           ) : filteredSales.length === 0 ? (
             <p className="text-muted-foreground">No paraniz sales for this date{categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse min-w-[700px]">
                 <thead>
                   <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-                    <th className="text-left p-4 font-semibold text-slate-700">Name</th>
-                    <th className="text-left p-4 font-semibold text-slate-700">Category</th>
-                    <th className="text-left p-4 font-semibold text-slate-700">Subscription Number</th>
-                    <th className="text-right p-4 font-semibold text-slate-700">Amount</th>
-                    <th className="text-right p-4 font-semibold text-slate-700">Cost</th>
-                    <th className="text-center p-4 font-semibold text-slate-700">Actions</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Category</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Subscription Number</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Amount</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Cost</th>
+                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredSales.map((sale) => (
                     <tr key={sale.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
-                      <td className="p-4 font-medium text-slate-900">{sale.name}</td>
-                      <td className="p-4">
-                        <Badge variant={sale.category === "FATURA" ? "default" : "secondary"} className="font-semibold">
+                      <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{sale.name}</td>
+                      <td className="p-2 sm:p-4">
+                        <Badge variant={sale.category === "FATURA" ? "default" : "secondary"} className="font-semibold text-xs sm:text-sm">
                           {sale.category}
                         </Badge>
                       </td>
-                      <td className="p-4 text-slate-700">{sale.subscriptionNumber || "-"}</td>
-                      <td className="text-right p-4 font-semibold text-slate-900">{sale.amount.toFixed(2)}</td>
-                      <td className="text-right p-4 font-semibold text-slate-900">{sale.cost.toFixed(2)}</td>
-                      <td className="text-center p-4">
-                        <div className="flex justify-center gap-2">
+                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{sale.subscriptionNumber || "-"}</td>
+                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{sale.amount.toFixed(2)}</td>
+                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{sale.cost.toFixed(2)}</td>
+                      <td className="text-center p-2 sm:p-4">
+                        <div className="flex justify-center gap-1 sm:gap-2">
                           <Button
                             variant="outline"
                             size="icon"
                             onClick={() => handleEditSaleClick(sale)}
-                            className="h-9 w-9 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200"
+                            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200"
                             title="Edit paraniz sale"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                           <Button
                             variant="outline"
                             size="icon"
                             onClick={() => handleDeleteSale(sale.id)}
-                            className="h-9 w-9 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200"
+                            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200"
                             title="Delete paraniz sale"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                         </div>
                       </td>
@@ -416,16 +424,16 @@ export function ParanizContent() {
           <CardTitle>Daily Totals</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-              <p className="text-sm font-medium text-slate-600">Total Paraniz Sales Amount</p>
-              <Badge variant="default" className="text-xl px-5 py-3 w-full justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+              <p className="text-xs sm:text-sm font-medium text-slate-600">Total Paraniz Sales Amount</p>
+              <Badge variant="default" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
                 {totalParanizSales.toFixed(2)}
               </Badge>
             </div>
-            <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200">
-              <p className="text-sm font-medium text-slate-600">Total Paraniz Sales Cost</p>
-              <Badge variant="destructive" className="text-xl px-5 py-3 w-full justify-center">
+            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200">
+              <p className="text-xs sm:text-sm font-medium text-slate-600">Total Paraniz Sales Cost</p>
+              <Badge variant="destructive" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
                 {totalParanizCost.toFixed(2)}
               </Badge>
             </div>
