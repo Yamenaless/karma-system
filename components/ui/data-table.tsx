@@ -10,15 +10,15 @@ interface DataTableProps {
 
 export function DataTable({ headers, children, className, emptyMessage }: DataTableProps) {
   return (
-    <div className={cn("overflow-x-auto rounded-xl border border-purple-200/50 bg-white/80 backdrop-blur-sm", className)}>
+    <div className={cn("overflow-x-auto rounded-lg border border-blue-200 bg-white", className)}>
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-gradient-to-r from-purple-50 via-violet-50 to-fuchsia-50 border-b-2 border-purple-200">
+          <tr className="bg-blue-50 border-b-2 border-blue-200">
             {headers.map((header, index) => (
               <th
                 key={index}
                 className={cn(
-                  "px-4 py-4 text-left text-sm font-bold text-purple-900 uppercase tracking-wider",
+                  "px-4 py-4 text-left text-sm font-bold text-blue-900 uppercase tracking-wider",
                   header.align === "right" && "text-right",
                   header.align === "center" && "text-center",
                   header.className
@@ -29,13 +29,13 @@ export function DataTable({ headers, children, className, emptyMessage }: DataTa
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-purple-100/50">
+        <tbody className="divide-y divide-blue-100">
           {children}
         </tbody>
       </table>
       {emptyMessage && (
         <div className="p-12 text-center">
-          <p className="text-purple-600/60 text-sm font-medium">{emptyMessage}</p>
+          <p className="text-blue-600/60 text-sm font-medium">{emptyMessage}</p>
         </div>
       )}
     </div>
@@ -53,7 +53,7 @@ export function DataTableRow({ children, className, onClick }: DataTableRowProps
     <tr
       className={cn(
         "transition-all duration-200",
-        "hover:bg-gradient-to-r hover:from-purple-50/50 hover:via-violet-50/50 hover:to-fuchsia-50/50",
+        "hover:bg-blue-50/50",
         onClick && "cursor-pointer",
         className
       )}

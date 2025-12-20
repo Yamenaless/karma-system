@@ -5,19 +5,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-semibold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-lg hover:shadow-xl hover:scale-105 hover:from-purple-700 hover:via-violet-700 hover:to-fuchsia-700 transition-all duration-300",
+        default: "bg-blue-700 text-white shadow-md hover:bg-blue-800 hover:shadow-lg transition-all duration-200",
         destructive:
-          "bg-gradient-to-r from-red-500 via-rose-500 to-pink-500 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300",
+          "bg-red-600 text-white shadow-md hover:bg-red-700 hover:shadow-lg transition-all duration-200",
         outline:
-          "border-2 border-purple-300 bg-background hover:bg-purple-50 hover:border-purple-500 hover:text-purple-700 shadow-sm hover:shadow-md transition-all duration-300",
+          "border-2 border-blue-300 bg-white hover:bg-blue-50 hover:border-blue-500 hover:text-blue-700 shadow-sm hover:shadow-md transition-all duration-200",
         secondary:
-          "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md hover:shadow-lg hover:scale-105 hover:from-emerald-600 hover:to-teal-700 transition-all duration-300",
-        ghost: "hover:bg-purple-50 hover:text-purple-700 transition-all duration-300",
-        link: "text-purple-600 underline-offset-4 hover:underline hover:text-purple-700 transition-all duration-300",
+          "bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200",
+        ghost: "hover:bg-blue-50 hover:text-blue-700 transition-all duration-200",
+        link: "text-blue-700 underline-offset-4 hover:underline hover:text-blue-800 transition-all duration-200",
       },
       size: {
         default: "h-11 px-6 py-2",

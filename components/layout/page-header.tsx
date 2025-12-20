@@ -21,11 +21,11 @@ export function PageHeader({
       {/* Main Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl lg:text-4xl font-bold text-blue-900">
             {title}
           </h1>
           {description && (
-            <p className="text-purple-700/70 text-base lg:text-lg font-medium">
+            <p className="text-blue-700/70 text-base lg:text-lg font-medium">
               {description}
             </p>
           )}
@@ -43,15 +43,15 @@ export function PageHeader({
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-purple-50/50 to-violet-50/30 p-5 border border-purple-200/50 shadow-md hover:shadow-lg transition-all duration-300 group"
+              className="relative overflow-hidden rounded-lg bg-white p-5 border border-blue-200 shadow-md hover:shadow-lg transition-all duration-200 group"
             >
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-purple-600/80">{stat.label}</p>
-                  <p className="text-2xl font-bold text-purple-900">{stat.value}</p>
+                  <p className="text-sm font-medium text-blue-600/80">{stat.label}</p>
+                  <p className="text-2xl font-bold text-blue-900">{stat.value}</p>
                 </div>
                 {stat.icon && (
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-purple-100 to-violet-100 text-purple-600 group-hover:scale-110 transition-transform duration-300">
+                  <div className="p-3 rounded-md bg-blue-100 text-blue-700 group-hover:scale-110 transition-transform duration-200">
                     {stat.icon}
                   </div>
                 )}

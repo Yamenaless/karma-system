@@ -28,7 +28,7 @@ export function SectionCard({
               <CardTitle className="text-xl font-bold">{title}</CardTitle>
             )}
             {description && (
-              <p className="text-sm text-purple-600/70">{description}</p>
+              <p className="text-sm text-blue-600/70">{description}</p>
             )}
           </div>
           {action && <div>{action}</div>}

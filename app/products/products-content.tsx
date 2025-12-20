@@ -312,7 +312,7 @@ export function ProductsContent() {
                 className="w-full sm:w-80 pl-10"
               />
               <svg
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-purple-400"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -415,7 +415,7 @@ export function ProductsContent() {
                       <img
                         src={imagePreview}
                         alt="Preview"
-                        className="w-full h-48 object-cover rounded-xl border-2 border-purple-200"
+                        className="w-full h-48 object-cover rounded-md border-2 border-blue-200"
                       />
                       <Button
                         type="button"
@@ -428,7 +428,7 @@ export function ProductsContent() {
                       </Button>
                     </div>
                   ) : (
-                    <div className="border-2 border-dashed border-purple-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors">
+                    <div className="border-2 border-dashed border-blue-300 rounded-md p-6 text-center hover:border-blue-400 transition-colors">
                       <Input
                         id="image"
                         type="file"
@@ -440,11 +440,11 @@ export function ProductsContent() {
                         htmlFor="image"
                         className="cursor-pointer flex flex-col items-center gap-2"
                       >
-                        <Upload className="h-8 w-8 text-purple-400" />
-                        <span className="text-sm text-purple-700">
+                        <Upload className="h-8 w-8 text-blue-400" />
+                        <span className="text-sm text-blue-700">
                           Click to upload or drag and drop
                         </span>
-                        <span className="text-xs text-purple-500">
+                        <span className="text-xs text-blue-500">
                           PNG, JPG, GIF up to 5MB
                         </span>
                       </Label>
@@ -606,7 +606,7 @@ export function ProductsContent() {
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full h-48 object-cover rounded-xl border-2 border-purple-200"
+                    className="w-full h-48 object-cover rounded-md border-2 border-blue-200"
                   />
                   <Button
                     type="button"
@@ -619,7 +619,7 @@ export function ProductsContent() {
                   </Button>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-purple-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors">
+                <div className="border-2 border-dashed border-blue-300 rounded-md p-6 text-center hover:border-blue-400 transition-colors">
                   <Input
                     id="edit-image"
                     type="file"
@@ -631,11 +631,11 @@ export function ProductsContent() {
                     htmlFor="edit-image"
                     className="cursor-pointer flex flex-col items-center gap-2"
                   >
-                    <Upload className="h-8 w-8 text-purple-400" />
-                    <span className="text-sm text-purple-700">
+                    <Upload className="h-8 w-8 text-blue-400" />
+                    <span className="text-sm text-blue-700">
                       Click to upload or drag and drop
                     </span>
-                    <span className="text-xs text-purple-500">
+                    <span className="text-xs text-blue-500">
                       PNG, JPG, GIF up to 5MB
                     </span>
                   </Label>
@@ -731,11 +731,11 @@ export function ProductsContent() {
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-16">
-            <Package className="h-16 w-16 text-purple-300 mx-auto mb-4" />
-            <p className="text-purple-600/70 text-lg font-medium mb-2">
+            <Package className="h-16 w-16 text-blue-300 mx-auto mb-4" />
+            <p className="text-blue-600/70 text-lg font-medium mb-2">
               {searchTerm ? "No products found matching your search." : "No products found."}
             </p>
-            <p className="text-purple-500/60 text-sm mb-6">
+            <p className="text-blue-500/60 text-sm mb-6">
               {searchTerm ? "Try adjusting your search terms." : "Add your first product to get started!"}
             </p>
             {!searchTerm && (
@@ -774,20 +774,20 @@ export function ProductsContent() {
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-16 h-16 object-cover rounded-xl border-2 border-purple-200 shadow-sm"
+                        className="w-16 h-16 object-cover rounded-md border-2 border-blue-200 shadow-sm"
                         onError={(e) => {
                           e.currentTarget.style.display = "none"
                         }}
                       />
                     </div>
                   ) : (
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-violet-100 rounded-xl flex items-center justify-center mx-auto">
-                      <ImageIcon className="h-8 w-8 text-purple-400" />
+                    <div className="w-16 h-16 bg-blue-100 rounded-md flex items-center justify-center mx-auto">
+                      <ImageIcon className="h-8 w-8 text-blue-400" />
                     </div>
                   )}
                 </DataTableCell>
                 <DataTableCell>
-                  <span className="font-semibold text-purple-900">{product.name}</span>
+                  <span className="font-semibold text-blue-900">{product.name}</span>
                 </DataTableCell>
                 <DataTableCell>
                   <Badge variant="outline" className="font-mono text-xs">
@@ -795,18 +795,18 @@ export function ProductsContent() {
                   </Badge>
                 </DataTableCell>
                 <DataTableCell>
-                  <span className="text-purple-700/80 max-w-xs truncate block" title={product.description || ""}>
-                    {product.description || <span className="text-purple-400/60">-</span>}
+                  <span className="text-blue-700/80 max-w-xs truncate block" title={product.description || ""}>
+                    {product.description || <span className="text-blue-400/60">-</span>}
                   </span>
                 </DataTableCell>
                 <DataTableCell align="right">
-                  <span className="font-bold text-purple-900">{product.quantity.toFixed(2)}</span>
+                  <span className="font-bold text-blue-900">{product.quantity.toFixed(2)}</span>
                 </DataTableCell>
                 <DataTableCell align="right">
-                  <span className="font-bold text-purple-900">{product.product_cost.toFixed(2)}</span>
+                  <span className="font-bold text-blue-900">{product.product_cost.toFixed(2)}</span>
                 </DataTableCell>
                 <DataTableCell align="right">
-                  <span className="font-bold text-emerald-600">{product.price.toFixed(2)}</span>
+                  <span className="font-bold text-blue-700">{product.price.toFixed(2)}</span>
                 </DataTableCell>
                 <DataTableCell>
                   {product.company_brand?.name ? (
@@ -814,21 +814,21 @@ export function ProductsContent() {
                       {product.company_brand.name}
                     </Badge>
                   ) : (
-                    <span className="text-purple-400/60">-</span>
+                    <span className="text-blue-400/60">-</span>
                   )}
                 </DataTableCell>
                 <DataTableCell>
                   {product.category?.name ? (
-                    <span className="text-purple-700 font-medium">{product.category.name}</span>
+                    <span className="text-blue-700 font-medium">{product.category.name}</span>
                   ) : (
-                    <span className="text-purple-400/60">-</span>
+                    <span className="text-blue-400/60">-</span>
                   )}
                 </DataTableCell>
                 <DataTableCell>
                   {product.subcategory?.name ? (
-                    <span className="text-purple-600/80 text-sm">{product.subcategory.name}</span>
+                    <span className="text-blue-600/80 text-sm">{product.subcategory.name}</span>
                   ) : (
-                    <span className="text-purple-400/60">-</span>
+                    <span className="text-blue-400/60">-</span>
                   )}
                 </DataTableCell>
                 <DataTableCell align="center">
@@ -837,7 +837,7 @@ export function ProductsContent() {
                       variant="outline"
                       size="icon"
                       onClick={() => handleEditClick(product)}
-                      className="h-9 w-9 hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all duration-300"
+                      className="h-9 w-9 hover:bg-blue-700 hover:text-white hover:border-blue-700 transition-all duration-200"
                       title="Edit product"
                     >
                       <Pencil className="h-4 w-4" />
@@ -861,35 +861,35 @@ export function ProductsContent() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <Card className="overflow-hidden border-2 border-purple-300 bg-gradient-to-br from-purple-50 via-violet-50 to-fuchsia-50">
+        <Card className="overflow-hidden border-2 border-blue-300 bg-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-purple-700 uppercase tracking-wide">Total Inventory Cost</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">
+                <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Total Inventory Cost</p>
+                <p className="text-3xl font-bold text-blue-900">
                   {totalProductsCost.toFixed(2)}
                 </p>
-                <p className="text-xs text-purple-600/70">Sum of (Quantity × Cost) for all products</p>
+                <p className="text-xs text-blue-600/70">Sum of (Quantity × Cost) for all products</p>
               </div>
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-200 to-violet-200">
-                <DollarSign className="h-8 w-8 text-purple-700" />
+              <div className="p-4 rounded-md bg-blue-100">
+                <DollarSign className="h-8 w-8 text-blue-700" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+        <Card className="overflow-hidden border-2 border-blue-400 bg-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-emerald-700 uppercase tracking-wide">Total Inventory Value</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                <p className="text-sm font-semibold text-blue-800 uppercase tracking-wide">Total Inventory Value</p>
+                <p className="text-3xl font-bold text-blue-900">
                   {totalProductsValue.toFixed(2)}
                 </p>
-                <p className="text-xs text-emerald-600/70">Sum of (Quantity × Price) for all products</p>
+                <p className="text-xs text-blue-600/70">Sum of (Quantity × Price) for all products</p>
               </div>
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-200 to-teal-200">
-                <TrendingUp className="h-8 w-8 text-emerald-700" />
+              <div className="p-4 rounded-md bg-blue-100">
+                <TrendingUp className="h-8 w-8 text-blue-700" />
               </div>
             </div>
           </CardContent>

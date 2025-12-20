@@ -10,7 +10,7 @@ export function PageContainer({ children, className }: PageContainerProps) {
   return (
     <div className={cn(
       "min-h-screen w-full",
-      "bg-gradient-to-br from-purple-50 via-violet-50/40 to-fuchsia-50",
+      "bg-white",
       className
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-7xl">
