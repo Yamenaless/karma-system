@@ -74,6 +74,24 @@ export async function getUnpaidDebts() {
   return { success: true, data: data || [] }
 }
 
+export async function getDebtsByDateRange(startDate: string, endDate: string) {
+  const supabase = createServerClient()
+  
+  const { data, error } = await supabase
+    .from("debts")
+    .select("*")
+    .gte("date", startDate)
+    .lte("date", endDate)
+    .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    return { success: false, error: error.message, data: null }
+  }
+
+  return { success: true, data: data || [] }
+}
+
 export async function updateDebt(id: string, data: DebtFormData) {
   const supabase = createServerClient()
   

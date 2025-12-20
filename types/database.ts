@@ -125,3 +125,58 @@ export interface KarmaProductFormData {
   type_id: string
 }
 
+export interface Category {
+  id: string
+  name: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Subcategory {
+  id: string
+  name: string
+  category_id: string
+  category?: Category
+  created_at: string
+  updated_at: string
+}
+
+export interface CompanyBrand {
+  id: string
+  name: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Product {
+  id: string
+  name: string
+  description: string | null
+  code: string
+  quantity: number
+  product_cost: number
+  price: number
+  image: string | null
+  company_brand_id: string | null
+  category_id: string | null
+  subcategory_id: string | null
+  category?: Category
+  subcategory?: Subcategory
+  company_brand?: CompanyBrand
+  created_at: string
+  updated_at: string
+}
+
+export interface ProductFormData {
+  name: string
+  description?: string
+  code: string
+  quantity: number
+  product_cost: number
+  price: number
+  image?: string
+  company_brand_id?: string
+  category_id?: string
+  subcategory_id?: string
+}
+

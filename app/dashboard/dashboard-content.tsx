@@ -8,14 +8,52 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { getTransformationTotalsByDate } from "@/app/actions/products"
+import { Select } from "@/components/ui/select"
+import { getTransformationTotalsByDate, getTransformationTotalsByDateRange } from "@/app/actions/products"
 import { getCashByDate, getPreviousDayCash, upsertCash } from "@/app/actions/cash"
-import { getTotalExpensesByDate } from "@/app/actions/expenses"
-import { getParanizSalesTotalByDate } from "@/app/actions/paraniz"
+import { getTotalExpensesByDate, getTotalExpensesByDateRange } from "@/app/actions/expenses"
+import { getParanizSalesTotalByDate, getParanizSalesTotalByDateRange } from "@/app/actions/paraniz"
 import { getUnpaidDebts } from "@/app/actions/debts"
 import { Debt } from "@/types/database"
 import { DollarSign, AlertCircle, X } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
+
+const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
+  const today = new Date()
+  const endDate = new Date(today)
+  const startDate = new Date(today)
+  
+  switch (filter) {
+    case "yesterday":
+      startDate.setDate(today.getDate() - 1)
+      endDate.setDate(today.getDate() - 1)
+      break
+    case "1day":
+      startDate.setDate(today.getDate() - 1)
+      endDate.setDate(today.getDate())
+      break
+    case "1week":
+      startDate.setDate(today.getDate() - 6)
+      endDate.setDate(today.getDate())
+      break
+    case "1month":
+      startDate.setDate(today.getDate() - 29)
+      endDate.setDate(today.getDate())
+      break
+    case "1year":
+      startDate.setDate(today.getDate() - 364)
+      endDate.setDate(today.getDate())
+      break
+    default:
+      const todayStr = today.toISOString().split("T")[0]
+      return { startDate: todayStr, endDate: todayStr }
+  }
+  
+  return {
+    startDate: startDate.toISOString().split("T")[0],
+    endDate: endDate.toISOString().split("T")[0]
+  }
+}
 
 export function DashboardContent() {
   const router = useRouter()
@@ -23,6 +61,8 @@ export function DashboardContent() {
     const today = new Date()
     return today.toISOString().split("T")[0]
   })
+  
+  const [dateFilter, setDateFilter] = useState<string>("custom")
 
   const [cashInBoxYesterday, setCashInBoxYesterday] = useState(0)
   const [cashInBoxToday, setCashInBoxToday] = useState(0)
@@ -61,21 +101,39 @@ export function DashboardContent() {
   }
 
   const loadTotalExpenses = async () => {
-    const result = await getTotalExpensesByDate(date)
+    let result
+    if (dateFilter === "custom") {
+      result = await getTotalExpensesByDate(date)
+    } else {
+      const { startDate, endDate } = getDateRangeByFilter(dateFilter)
+      result = await getTotalExpensesByDateRange(startDate, endDate)
+    }
     if (result.success) {
       setTotalExpenses(result.total)
     }
   }
 
   const loadTransformationTotals = async () => {
-    const result = await getTransformationTotalsByDate(date)
+    let result
+    if (dateFilter === "custom") {
+      result = await getTransformationTotalsByDate(date)
+    } else {
+      const { startDate, endDate } = getDateRangeByFilter(dateFilter)
+      result = await getTransformationTotalsByDateRange(startDate, endDate)
+    }
     if (result.success && result.totals) {
       setTransformationTotals(result.totals)
     }
   }
 
   const loadParanizSalesTotal = async () => {
-    const result = await getParanizSalesTotalByDate(date)
+    let result
+    if (dateFilter === "custom") {
+      result = await getParanizSalesTotalByDate(date)
+    } else {
+      const { startDate, endDate } = getDateRangeByFilter(dateFilter)
+      result = await getParanizSalesTotalByDateRange(startDate, endDate)
+    }
     if (result.success) {
       setTotalParanizSales(result.total)
     }
@@ -98,7 +156,7 @@ export function DashboardContent() {
     loadTransformationTotals()
     loadParanizSalesTotal()
     loadUnpaidDebts()
-  }, [date])
+  }, [date, dateFilter])
 
 
   const handleCashSave = async () => {
@@ -139,7 +197,11 @@ export function DashboardContent() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Daily Accounting System</h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-            Date: <span className="font-semibold">{date}</span>
+            {dateFilter === "custom" ? (
+              <>Date: <span className="font-semibold">{date}</span></>
+            ) : (
+              <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span></>
+            )}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
@@ -216,12 +278,36 @@ export function DashboardContent() {
               </DialogContent>
             </Dialog>
           )}
-          <Input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full sm:w-auto"
-          />
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Select
+              value={dateFilter}
+            onChange={(e) => {
+              const filter = e.target.value
+              setDateFilter(filter)
+              if (filter !== "custom") {
+                const { endDate } = getDateRangeByFilter(filter)
+                setDate(endDate)
+              }
+            }}
+              className="w-full sm:w-auto"
+            >
+            <option value="custom">Custom Date</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="1day">1 Day</option>
+            <option value="1week">1 Week</option>
+            <option value="1month">1 Month</option>
+            <option value="1year">1 Year</option>
+            </Select>
+            <Input
+              type="date"
+              value={date}
+              onChange={(e) => {
+                setDate(e.target.value)
+                setDateFilter("custom")
+              }}
+              className="w-full sm:w-auto"
+            />
+          </div>
         </div>
       </div>
 

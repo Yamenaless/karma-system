@@ -8,16 +8,55 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Select } from "@/components/ui/select"
-import { addDebt, getDebtsByDate, updateDebt, deleteDebt, toggleDebtPaidStatus } from "@/app/actions/debts"
+import { addDebt, getDebtsByDate, getDebtsByDateRange, updateDebt, deleteDebt, toggleDebtPaidStatus } from "@/app/actions/debts"
 import { Debt, DebtFormData } from "@/types/database"
 import { Plus, Pencil, Trash2, CheckCircle2, XCircle } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
+
+const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
+  const today = new Date()
+  const endDate = new Date(today)
+  const startDate = new Date(today)
+  
+  switch (filter) {
+    case "yesterday":
+      startDate.setDate(today.getDate() - 1)
+      endDate.setDate(today.getDate() - 1)
+      break
+    case "1day":
+      startDate.setDate(today.getDate() - 1)
+      endDate.setDate(today.getDate())
+      break
+    case "1week":
+      startDate.setDate(today.getDate() - 6)
+      endDate.setDate(today.getDate())
+      break
+    case "1month":
+      startDate.setDate(today.getDate() - 29)
+      endDate.setDate(today.getDate())
+      break
+    case "1year":
+      startDate.setDate(today.getDate() - 364)
+      endDate.setDate(today.getDate())
+      break
+    default:
+      const todayStr = today.toISOString().split("T")[0]
+      return { startDate: todayStr, endDate: todayStr }
+  }
+  
+  return {
+    startDate: startDate.toISOString().split("T")[0],
+    endDate: endDate.toISOString().split("T")[0]
+  }
+}
 
 export function DebtsContent() {
   const [date, setDate] = useState(() => {
     const today = new Date()
     return today.toISOString().split("T")[0]
   })
+  
+  const [dateFilter, setDateFilter] = useState<string>("custom")
 
   const [debts, setDebts] = useState<Debt[]>([])
   const [loading, setLoading] = useState(true)
@@ -34,7 +73,13 @@ export function DebtsContent() {
 
   const loadDebts = async () => {
     setLoading(true)
-    const result = await getDebtsByDate(date)
+    let result
+    if (dateFilter === "custom") {
+      result = await getDebtsByDate(date)
+    } else {
+      const { startDate, endDate } = getDateRangeByFilter(dateFilter)
+      result = await getDebtsByDateRange(startDate, endDate)
+    }
     if (result.success && result.data) {
       setDebts(result.data)
     }
@@ -43,7 +88,7 @@ export function DebtsContent() {
 
   useEffect(() => {
     loadDebts()
-  }, [date])
+  }, [date, dateFilter])
 
   const handleAddDebt = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -126,15 +171,43 @@ export function DebtsContent() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Debts</h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-            Date: <span className="font-semibold">{date}</span>
+            {dateFilter === "custom" ? (
+              <>Date: <span className="font-semibold">{date}</span></>
+            ) : (
+              <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span></>
+            )}
           </p>
         </div>
-        <Input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full sm:w-auto"
-        />
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Select
+            value={dateFilter}
+            onChange={(e) => {
+              const filter = e.target.value
+              setDateFilter(filter)
+              if (filter !== "custom") {
+                const { endDate } = getDateRangeByFilter(filter)
+                setDate(endDate)
+              }
+            }}
+            className="w-full sm:w-auto"
+          >
+            <option value="custom">Custom Date</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="1day">1 Day</option>
+            <option value="1week">1 Week</option>
+            <option value="1month">1 Month</option>
+            <option value="1year">1 Year</option>
+          </Select>
+          <Input
+            type="date"
+            value={date}
+            onChange={(e) => {
+              setDate(e.target.value)
+              setDateFilter("custom")
+            }}
+            className="w-full sm:w-auto"
+          />
+        </div>
       </div>
 
       {/* Add Debt Button */}

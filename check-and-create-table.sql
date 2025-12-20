@@ -54,3 +54,7 @@ WHERE table_schema = 'public'
 AND table_name = 'daily_transformations'
 ORDER BY ordinal_position;
 
+
+
+
+

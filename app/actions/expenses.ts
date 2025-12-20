@@ -56,6 +56,41 @@ export async function getTotalExpensesByDate(date: string) {
   return { success: true, total }
 }
 
+export async function getExpensesByDateRange(startDate: string, endDate: string) {
+  const supabase = createServerClient()
+  
+  const { data, error } = await supabase
+    .from("daily_expenses")
+    .select("*")
+    .gte("date", startDate)
+    .lte("date", endDate)
+    .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    return { success: false, error: error.message, data: null }
+  }
+
+  return { success: true, data: data || [] }
+}
+
+export async function getTotalExpensesByDateRange(startDate: string, endDate: string) {
+  const supabase = createServerClient()
+  
+  const { data, error } = await supabase
+    .from("daily_expenses")
+    .select("amount")
+    .gte("date", startDate)
+    .lte("date", endDate)
+
+  if (error) {
+    return { success: false, error: error.message, total: 0 }
+  }
+
+  const total = (data || []).reduce((sum, item) => sum + (parseFloat(item.amount.toString()) || 0), 0)
+  return { success: true, total }
+}
+
 export async function updateExpense(id: string, data: ExpenseFormData) {
   const supabase = createServerClient()
   

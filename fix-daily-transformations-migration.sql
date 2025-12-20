@@ -52,3 +52,7 @@ DROP POLICY IF EXISTS "Allow all operations on daily_transformations" ON daily_t
 CREATE POLICY "Allow all operations on daily_transformations" ON daily_transformations
   FOR ALL USING (true) WITH CHECK (true);
 
+
+
+
+

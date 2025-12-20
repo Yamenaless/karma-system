@@ -190,6 +190,52 @@ export async function getParanizSalesTotalByDate(date: string) {
   return { success: true, total }
 }
 
+export async function getParanizSalesByDateRange(startDate: string, endDate: string) {
+  const supabase = createServerClient()
+  
+  const { data, error } = await supabase
+    .from("daily_paraniz_sales")
+    .select("*")
+    .gte("date", startDate)
+    .lte("date", endDate)
+    .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    return { success: false, error: error.message, data: null }
+  }
+
+  const mappedData = (data || []).map((item: any) => ({
+    id: item.id,
+    date: item.date,
+    name: item.name,
+    amount: item.amount,
+    cost: item.cost || 0,
+    category: item.category || "FATURA",
+    subscriptionNumber: item.subscription_number || "",
+    created_at: item.created_at,
+  }))
+
+  return { success: true, data: mappedData }
+}
+
+export async function getParanizSalesTotalByDateRange(startDate: string, endDate: string) {
+  const supabase = createServerClient()
+  
+  const { data, error } = await supabase
+    .from("daily_paraniz_sales")
+    .select("amount")
+    .gte("date", startDate)
+    .lte("date", endDate)
+
+  if (error) {
+    return { success: false, error: error.message, total: 0 }
+  }
+
+  const total = (data || []).reduce((sum, item) => sum + (parseFloat(item.amount.toString()) || 0), 0)
+  return { success: true, total }
+}
+
 export async function updateParanizSale(id: string, name: string, amount: number, cost: number, category: string, subscriptionNumber: string) {
   const supabase = createServerClient()
   
