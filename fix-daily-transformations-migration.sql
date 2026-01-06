@@ -56,3 +56,4 @@ CREATE POLICY "Allow all operations on daily_transformations" ON daily_transform
 
 
 
+

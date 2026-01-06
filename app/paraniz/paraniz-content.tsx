@@ -12,11 +12,12 @@ import {
   addParanizSale,
   getParanizSalesByDate,
   getParanizSalesByDateRange,
+  getAllParanizSales,
   updateParanizSale,
   deleteParanizSale
 } from "@/app/actions/paraniz"
 import { DailyParanizSale, ParanizSaleFormData } from "@/types/database"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2, List } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
@@ -63,6 +64,7 @@ export function ParanizContent() {
   })
   
   const [dateFilter, setDateFilter] = useState<string>("custom")
+  const [showAllSales, setShowAllSales] = useState<boolean>(false)
 
   const [paranizSales, setParanizSales] = useState<DailyParanizSale[]>([])
   const [salesLoading, setSalesLoading] = useState(true)
@@ -83,7 +85,9 @@ export function ParanizContent() {
   const loadParanizSales = async () => {
     setSalesLoading(true)
     let result
-    if (dateFilter === "custom") {
+    if (showAllSales) {
+      result = await getAllParanizSales()
+    } else if (dateFilter === "custom") {
       result = await getParanizSalesByDate(date)
     } else {
       const { startDate, endDate } = getDateRangeByFilter(dateFilter)
@@ -97,7 +101,7 @@ export function ParanizContent() {
 
   useEffect(() => {
     loadParanizSales()
-  }, [date, dateFilter])
+  }, [date, dateFilter, showAllSales])
 
   // Sales handlers
   const handleAddSale = async (e: React.FormEvent) => {
@@ -178,7 +182,9 @@ export function ParanizContent() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Daily Paraniz</h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-            {dateFilter === "custom" ? (
+            {showAllSales ? (
+              <>Showing <span className="font-semibold">All Transactions</span></>
+            ) : dateFilter === "custom" ? (
               <>Date: <span className="font-semibold">{date}</span></>
             ) : (
               <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span></>
@@ -186,34 +192,51 @@ export function ParanizContent() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Select
-            value={dateFilter}
-            onChange={(e) => {
-              const filter = e.target.value
-              setDateFilter(filter)
-              if (filter !== "custom") {
-                const { endDate } = getDateRangeByFilter(filter)
-                setDate(endDate)
+          <Button
+            variant={showAllSales ? "default" : "outline"}
+            onClick={() => {
+              setShowAllSales(!showAllSales)
+              if (!showAllSales) {
+                setDateFilter("custom")
               }
             }}
             className="w-full sm:w-auto"
           >
-            <option value="custom">Custom Date</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="1day">1 Day</option>
-            <option value="1week">1 Week</option>
-            <option value="1month">1 Month</option>
-            <option value="1year">1 Year</option>
-          </Select>
-          <Input
-            type="date"
-            value={date}
-            onChange={(e) => {
-              setDate(e.target.value)
-              setDateFilter("custom")
-            }}
-            className="w-full sm:w-auto"
-          />
+            <List className="mr-2 h-4 w-4" />
+            {showAllSales ? "Show Filtered" : "Show All"}
+          </Button>
+          {!showAllSales && (
+            <>
+              <Select
+                value={dateFilter}
+                onChange={(e) => {
+                  const filter = e.target.value
+                  setDateFilter(filter)
+                  if (filter !== "custom") {
+                    const { endDate } = getDateRangeByFilter(filter)
+                    setDate(endDate)
+                  }
+                }}
+                className="w-full sm:w-auto"
+              >
+                <option value="custom">Custom Date</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="1day">1 Day</option>
+                <option value="1week">1 Week</option>
+                <option value="1month">1 Month</option>
+                <option value="1year">1 Year</option>
+              </Select>
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) => {
+                  setDate(e.target.value)
+                  setDateFilter("custom")
+                }}
+                className="w-full sm:w-auto"
+              />
+            </>
+          )}
         </div>
       </div>
 
@@ -435,12 +458,18 @@ export function ParanizContent() {
               <Spinner size="lg" text="Loading paraniz sales..." />
             </div>
           ) : filteredSales.length === 0 ? (
-            <p className="text-muted-foreground">No paraniz sales for this date{categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.</p>
+            <p className="text-muted-foreground">
+              {showAllSales 
+                ? `No paraniz sales found${categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.`
+                : `No paraniz sales for this date${categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.`
+              }
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse min-w-[700px]">
                 <thead>
                   <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Date</th>
                     <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
                     <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Category</th>
                     <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Subscription Number</th>
@@ -452,6 +481,7 @@ export function ParanizContent() {
                 <tbody>
                   {filteredSales.map((sale) => (
                     <tr key={sale.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
+                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{sale.date}</td>
                       <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{sale.name}</td>
                       <td className="p-2 sm:p-4">
                         <Badge variant={sale.category === "FATURA" ? "default" : "secondary"} className="font-semibold text-xs sm:text-sm">

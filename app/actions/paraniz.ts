@@ -219,6 +219,33 @@ export async function getParanizSalesByDateRange(startDate: string, endDate: str
   return { success: true, data: mappedData }
 }
 
+export async function getAllParanizSales() {
+  const supabase = createServerClient()
+  
+  const { data, error } = await supabase
+    .from("daily_paraniz_sales")
+    .select("*")
+    .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    return { success: false, error: error.message, data: null }
+  }
+
+  const mappedData = (data || []).map((item: any) => ({
+    id: item.id,
+    date: item.date,
+    name: item.name,
+    amount: item.amount,
+    cost: item.cost || 0,
+    category: item.category || "FATURA",
+    subscriptionNumber: item.subscription_number || "",
+    created_at: item.created_at,
+  }))
+
+  return { success: true, data: mappedData }
+}
+
 export async function getParanizSalesTotalByDateRange(startDate: string, endDate: string) {
   const supabase = createServerClient()
   
