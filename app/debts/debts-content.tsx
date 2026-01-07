@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Select } from "@/components/ui/select"
-import { addDebt, getDebtsByDate, getDebtsByDateRange, getAllDebts, updateDebt, deleteDebt, toggleDebtPaidStatus } from "@/app/actions/debts"
+import { addDebt, getDebtsByDate, getDebtsByDateRange, updateDebt, deleteDebt, toggleDebtPaidStatus, getAllDebts } from "@/app/actions/debts"
 import { Debt, DebtFormData } from "@/types/database"
-import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Search, X, List } from "lucide-react"
+import { Plus, Pencil, Trash2, CheckCircle2, XCircle } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
@@ -57,8 +57,7 @@ export function DebtsContent() {
   })
   
   const [dateFilter, setDateFilter] = useState<string>("custom")
-  const [nameFilter, setNameFilter] = useState<string>("")
-  const [showAllDebts, setShowAllDebts] = useState<boolean>(false)
+  const [showAll, setShowAll] = useState(false)
 
   const [debts, setDebts] = useState<Debt[]>([])
   const [loading, setLoading] = useState(true)
@@ -76,7 +75,7 @@ export function DebtsContent() {
   const loadDebts = async () => {
     setLoading(true)
     let result
-    if (showAllDebts) {
+    if (showAll) {
       result = await getAllDebts()
     } else if (dateFilter === "custom") {
       result = await getDebtsByDate(date)
@@ -92,7 +91,7 @@ export function DebtsContent() {
 
   useEffect(() => {
     loadDebts()
-  }, [date, dateFilter, showAllDebts])
+  }, [date, dateFilter, showAll])
 
   const handleAddDebt = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -162,17 +161,11 @@ export function DebtsContent() {
     }
   }
 
-  // Filter debts by name
-  const filteredDebts = debts.filter((debt) => {
-    if (!nameFilter.trim()) return true
-    return debt.customer_name.toLowerCase().includes(nameFilter.toLowerCase())
-  })
-
-  // Calculate totals based on filtered debts
-  const totalDebts = filteredDebts.reduce((sum, d) => sum + (d.amount || 0), 0)
-  const unpaidDebts = filteredDebts.filter((d) => !d.is_paid)
+  // Calculate totals
+  const totalDebts = debts.reduce((sum, d) => sum + (d.amount || 0), 0)
+  const unpaidDebts = debts.filter((d) => !d.is_paid)
   const totalUnpaid = unpaidDebts.reduce((sum, d) => sum + (d.amount || 0), 0)
-  const totalPaid = filteredDebts.filter((d) => d.is_paid).reduce((sum, d) => sum + (d.amount || 0), 0)
+  const totalPaid = debts.filter((d) => d.is_paid).reduce((sum, d) => sum + (d.amount || 0), 0)
 
   return (
     <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
@@ -181,7 +174,7 @@ export function DebtsContent() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Debts</h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-            {showAllDebts ? (
+            {showAll ? (
               <>Showing <span className="font-semibold">All Debts</span></>
             ) : dateFilter === "custom" ? (
               <>Date: <span className="font-semibold">{date}</span></>
@@ -191,39 +184,19 @@ export function DebtsContent() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <div className="relative w-full sm:w-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input
-              type="text"
-              placeholder="Filter by customer name..."
-              value={nameFilter}
-              onChange={(e) => setNameFilter(e.target.value)}
-              className="w-full sm:w-64 pl-10 pr-10"
-            />
-            {nameFilter && (
-              <button
-                onClick={() => setNameFilter("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                aria-label="Clear filter"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
           <Button
-            variant={showAllDebts ? "default" : "outline"}
+            variant={showAll ? "default" : "outline"}
             onClick={() => {
-              setShowAllDebts(!showAllDebts)
-              if (!showAllDebts) {
+              setShowAll(!showAll)
+              if (!showAll) {
                 setDateFilter("custom")
               }
             }}
             className="w-full sm:w-auto"
           >
-            <List className="mr-2 h-4 w-4" />
-            {showAllDebts ? "Show Filtered" : "Show All"}
+            {showAll ? "Show Filtered" : "Show All Debts"}
           </Button>
-          {!showAllDebts && (
+          {!showAll && (
             <>
               <Select
                 value={dateFilter}
@@ -408,8 +381,8 @@ export function DebtsContent() {
       </Dialog>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <Card>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <Card className="border-primary/30 bg-primary/5">
           <CardHeader>
             <CardTitle className="text-xs sm:text-sm font-medium">Total Debts</CardTitle>
           </CardHeader>
@@ -419,7 +392,7 @@ export function DebtsContent() {
             </Badge>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-destructive/30 bg-destructive/5">
           <CardHeader>
             <CardTitle className="text-xs sm:text-sm font-medium">Unpaid Debts</CardTitle>
           </CardHeader>
@@ -429,12 +402,12 @@ export function DebtsContent() {
             </Badge>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-success/30 bg-success/5">
           <CardHeader>
             <CardTitle className="text-xs sm:text-sm font-medium">Paid Debts</CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge variant="default" className="text-base sm:text-lg px-3 sm:px-4 py-2 bg-green-600">
+            <Badge variant="success" className="text-base sm:text-lg px-3 sm:px-4 py-2">
               {totalPaid.toFixed(2)}
             </Badge>
           </CardContent>
@@ -451,10 +424,8 @@ export function DebtsContent() {
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading debts..." />
             </div>
-          ) : filteredDebts.length === 0 ? (
-            <p className="text-muted-foreground">
-              {nameFilter ? "No debts found matching the filter." : showAllDebts ? "No debts found." : "No debts for this date."}
-            </p>
+          ) : debts.length === 0 ? (
+            <p className="text-muted-foreground">No debts for this date.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse min-w-[700px]">
@@ -469,7 +440,7 @@ export function DebtsContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredDebts.map((debt) => (
+                  {debts.map((debt) => (
                     <tr key={debt.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
                       <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{debt.customer_name}</td>
                       <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{debt.product_name}</td>

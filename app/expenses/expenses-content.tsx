@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Select } from "@/components/ui/select"
-import { addExpense, getExpensesByDate, getExpensesByDateRange, getAllExpenses, updateExpense, deleteExpense } from "@/app/actions/expenses"
+import { addExpense, getExpensesByDate, getExpensesByDateRange, updateExpense, deleteExpense, getAllExpenses } from "@/app/actions/expenses"
 import { DailyExpense, ExpenseFormData } from "@/types/database"
-import { Plus, Pencil, Trash2, List } from "lucide-react"
+import { Plus, Pencil, Trash2 } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
@@ -57,7 +57,7 @@ export function ExpensesContent() {
   })
   
   const [dateFilter, setDateFilter] = useState<string>("custom")
-  const [showAllExpenses, setShowAllExpenses] = useState<boolean>(false)
+  const [showAll, setShowAll] = useState(false)
 
   const [expenses, setExpenses] = useState<DailyExpense[]>([])
   const [loading, setLoading] = useState(true)
@@ -73,7 +73,7 @@ export function ExpensesContent() {
   const loadExpenses = async () => {
     setLoading(true)
     let result
-    if (showAllExpenses) {
+    if (showAll) {
       result = await getAllExpenses()
     } else if (dateFilter === "custom") {
       result = await getExpensesByDate(date)
@@ -89,7 +89,7 @@ export function ExpensesContent() {
 
   useEffect(() => {
     loadExpenses()
-  }, [date, dateFilter, showAllExpenses])
+  }, [date, dateFilter, showAll])
 
   const handleAddExpense = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -154,7 +154,7 @@ export function ExpensesContent() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Daily Expenses</h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-            {showAllExpenses ? (
+            {showAll ? (
               <>Showing <span className="font-semibold">All Expenses</span></>
             ) : dateFilter === "custom" ? (
               <>Date: <span className="font-semibold">{date}</span></>
@@ -165,19 +165,18 @@ export function ExpensesContent() {
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button
-            variant={showAllExpenses ? "default" : "outline"}
+            variant={showAll ? "default" : "outline"}
             onClick={() => {
-              setShowAllExpenses(!showAllExpenses)
-              if (!showAllExpenses) {
+              setShowAll(!showAll)
+              if (!showAll) {
                 setDateFilter("custom")
               }
             }}
             className="w-full sm:w-auto"
           >
-            <List className="mr-2 h-4 w-4" />
-            {showAllExpenses ? "Show Filtered" : "Show All"}
+            {showAll ? "Show Filtered" : "Show All Expenses"}
           </Button>
-          {!showAllExpenses && (
+          {!showAll && (
             <>
               <Select
                 value={dateFilter}
@@ -324,15 +323,12 @@ export function ExpensesContent() {
               <Spinner size="lg" text="Loading expenses..." />
             </div>
           ) : expenses.length === 0 ? (
-            <p className="text-muted-foreground">
-              {showAllExpenses ? "No expenses found." : "No expenses for this date."}
-            </p>
+            <p className="text-muted-foreground">No expenses for this date.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse min-w-[400px]">
                 <thead>
                   <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Date</th>
                     <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
                     <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Amount</th>
                     <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
@@ -341,7 +337,6 @@ export function ExpensesContent() {
                 <tbody>
                   {expenses.map((expense) => (
                     <tr key={expense.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
-                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{expense.date}</td>
                       <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{expense.name}</td>
                       <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{expense.amount.toFixed(2)}</td>
                       <td className="text-center p-2 sm:p-4">

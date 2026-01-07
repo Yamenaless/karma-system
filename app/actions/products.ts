@@ -210,3 +210,40 @@ export async function deleteTransformation(id: string) {
   return { success: true }
 }
 
+export async function getAllTransformations() {
+  const supabase = createServerClient()
+  
+  const { data, error } = await supabase
+    .from("daily_transformations")
+    .select("*")
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    console.error("Database error:", error)
+    if (error.message.includes("schema cache") || error.message.includes("does not exist")) {
+      return { 
+        success: false, 
+        error: "Table 'daily_transformations' not found. Please run the migration script in Supabase SQL Editor. See check-and-create-table.sql file.", 
+        data: [] 
+      }
+    }
+    return { success: false, error: error.message, data: [] }
+  }
+
+  if (!data) {
+    return { success: true, data: [] }
+  }
+
+  const mappedData = data.map((item: any) => ({
+    id: item.id,
+    date: item.date,
+    name: item.product_name,
+    quantity: parseFloat(item.quantity?.toString() || "0"),
+    dollarRate: parseFloat(item.dollar_rate?.toString() || "0"),
+    sellingPrice: parseFloat(item.selling_price?.toString() || "0"),
+    created_at: item.created_at,
+  }))
+
+  return { success: true, data: mappedData }
+}
+

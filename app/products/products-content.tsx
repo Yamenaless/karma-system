@@ -20,12 +20,8 @@ import {
 } from "@/app/actions/products-management"
 import { uploadProductImage, deleteProductImage } from "@/app/actions/image-upload"
 import { Product, ProductFormData, Category, Subcategory, CompanyBrand } from "@/types/database"
-import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X, Package, TrendingUp, DollarSign } from "lucide-react"
+import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
-import { PageHeader } from "@/components/layout/page-header"
-import { PageContainer } from "@/components/layout/page-container"
-import { SectionCard } from "@/components/layout/section-card"
-import { DataTable, DataTableRow, DataTableCell } from "@/components/ui/data-table"
 
 export function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([])
@@ -280,59 +276,36 @@ export function ProductsContent() {
   }, 0)
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Products Management"
-        description="Manage your inventory, track stock levels, and monitor product costs"
-        stats={[
-          {
-            label: "Total Products",
-            value: products.length,
-            icon: <Package className="h-5 w-5" />
-          },
-          {
-            label: "Total Cost",
-            value: totalProductsCost.toFixed(2),
-            icon: <DollarSign className="h-5 w-5" />
-          },
-          {
-            label: "Total Value",
-            value: totalProductsValue.toFixed(2),
-            icon: <TrendingUp className="h-5 w-5" />
-          }
-        ]}
-        action={
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full sm:w-80 pl-10"
-              />
-              <svg
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-blue-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="w-full sm:w-auto">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Product
-                </Button>
-              </DialogTrigger>
-            <DialogContent className="w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-[80vw] max-w-[1200px] max-h-[90vh] overflow-y-auto">
+    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Products</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+            Total Products: <span className="font-semibold">{products.length}</span>
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full sm:w-64"
+          />
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Product
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="w-[95vw] sm:w-full max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-lg sm:text-xl">Add New Product</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddProduct} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name">Name *</Label>
                     <Input
@@ -367,7 +340,7 @@ export function ProductsContent() {
                     rows={3}
                   />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="quantity">Quantity *</Label>
                     <Input
@@ -394,19 +367,19 @@ export function ProductsContent() {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="price">Price *</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) =>
-                        setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })
-                      }
-                      required
-                    />
-                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="price">Price *</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) =>
+                      setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })
+                    }
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="image">Product Image</Label>
@@ -415,7 +388,7 @@ export function ProductsContent() {
                       <img
                         src={imagePreview}
                         alt="Preview"
-                        className="w-full h-48 object-cover rounded-md border-2 border-blue-200"
+                        className="w-full h-48 object-cover rounded-lg border-2 border-slate-200"
                       />
                       <Button
                         type="button"
@@ -428,7 +401,7 @@ export function ProductsContent() {
                       </Button>
                     </div>
                   ) : (
-                    <div className="border-2 border-dashed border-blue-300 rounded-md p-6 text-center hover:border-blue-400 transition-colors">
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
                       <Input
                         id="image"
                         type="file"
@@ -440,11 +413,11 @@ export function ProductsContent() {
                         htmlFor="image"
                         className="cursor-pointer flex flex-col items-center gap-2"
                       >
-                        <Upload className="h-8 w-8 text-blue-400" />
-                        <span className="text-sm text-blue-700">
+                        <Upload className="h-8 w-8 text-slate-400" />
+                        <span className="text-sm text-slate-600">
                           Click to upload or drag and drop
                         </span>
-                        <span className="text-xs text-blue-500">
+                        <span className="text-xs text-slate-400">
                           PNG, JPG, GIF up to 5MB
                         </span>
                       </Label>
@@ -468,7 +441,7 @@ export function ProductsContent() {
                     ))}
                   </Select>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
                     <Select
@@ -525,13 +498,12 @@ export function ProductsContent() {
               </form>
             </DialogContent>
           </Dialog>
-          </div>
-        }
-      />
+        </div>
+      </div>
 
       {/* Edit Product Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-[80vw] max-w-[1200px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:w-full max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg sm:text-xl">Edit Product</DialogTitle>
           </DialogHeader>
@@ -606,7 +578,7 @@ export function ProductsContent() {
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full h-48 object-cover rounded-md border-2 border-blue-200"
+                    className="w-full h-48 object-cover rounded-lg border-2 border-slate-200"
                   />
                   <Button
                     type="button"
@@ -619,7 +591,7 @@ export function ProductsContent() {
                   </Button>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-blue-300 rounded-md p-6 text-center hover:border-blue-400 transition-colors">
+                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
                   <Input
                     id="edit-image"
                     type="file"
@@ -631,11 +603,11 @@ export function ProductsContent() {
                     htmlFor="edit-image"
                     className="cursor-pointer flex flex-col items-center gap-2"
                   >
-                    <Upload className="h-8 w-8 text-blue-400" />
-                    <span className="text-sm text-blue-700">
+                    <Upload className="h-8 w-8 text-slate-400" />
+                    <span className="text-sm text-slate-600">
                       Click to upload or drag and drop
                     </span>
-                    <span className="text-xs text-blue-500">
+                    <span className="text-xs text-slate-400">
                       PNG, JPG, GIF up to 5MB
                     </span>
                   </Label>
@@ -721,181 +693,128 @@ export function ProductsContent() {
       </Dialog>
 
       {/* Products Table */}
-      <SectionCard
-        title="Products Inventory"
-        description={`${filteredProducts.length} of ${products.length} products displayed`}
-      >
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Spinner size="lg" text="Loading products..." />
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-16">
-            <Package className="h-16 w-16 text-blue-300 mx-auto mb-4" />
-            <p className="text-blue-600/70 text-lg font-medium mb-2">
-              {searchTerm ? "No products found matching your search." : "No products found."}
-            </p>
-            <p className="text-blue-500/60 text-sm mb-6">
-              {searchTerm ? "Try adjusting your search terms." : "Add your first product to get started!"}
-            </p>
-            {!searchTerm && (
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Your First Product
-                  </Button>
-                </DialogTrigger>
-              </Dialog>
-            )}
-          </div>
-        ) : (
-          <DataTable
-            headers={[
-              { label: "Image", align: "center" },
-              { label: "Name", align: "left" },
-              { label: "Code", align: "left" },
-              { label: "Description", align: "left" },
-              { label: "Quantity", align: "right" },
-              { label: "Cost", align: "right" },
-              { label: "Price", align: "right" },
-              { label: "Brand", align: "left" },
-              { label: "Category", align: "left" },
-              { label: "Sub Category", align: "left" },
-              { label: "Actions", align: "center" }
-            ]}
-            className="min-w-[1200px]"
-          >
-            {filteredProducts.map((product) => (
-              <DataTableRow key={product.id}>
-                <DataTableCell align="center">
-                  {product.image ? (
-                    <div className="flex justify-center">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-16 h-16 object-cover rounded-md border-2 border-blue-200 shadow-sm"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none"
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-16 h-16 bg-blue-100 rounded-md flex items-center justify-center mx-auto">
-                      <ImageIcon className="h-8 w-8 text-blue-400" />
-                    </div>
-                  )}
-                </DataTableCell>
-                <DataTableCell>
-                  <span className="font-semibold text-blue-900">{product.name}</span>
-                </DataTableCell>
-                <DataTableCell>
-                  <Badge variant="outline" className="font-mono text-xs">
-                    {product.code}
-                  </Badge>
-                </DataTableCell>
-                <DataTableCell>
-                  <span className="text-blue-700/80 max-w-xs truncate block" title={product.description || ""}>
-                    {product.description || <span className="text-blue-400/60">-</span>}
-                  </span>
-                </DataTableCell>
-                <DataTableCell align="right">
-                  <span className="font-bold text-blue-900">{product.quantity.toFixed(2)}</span>
-                </DataTableCell>
-                <DataTableCell align="right">
-                  <span className="font-bold text-blue-900">{product.product_cost.toFixed(2)}</span>
-                </DataTableCell>
-                <DataTableCell align="right">
-                  <span className="font-bold text-blue-700">{product.price.toFixed(2)}</span>
-                </DataTableCell>
-                <DataTableCell>
-                  {product.company_brand?.name ? (
-                    <Badge variant="secondary" className="text-xs">
-                      {product.company_brand.name}
-                    </Badge>
-                  ) : (
-                    <span className="text-blue-400/60">-</span>
-                  )}
-                </DataTableCell>
-                <DataTableCell>
-                  {product.category?.name ? (
-                    <span className="text-blue-700 font-medium">{product.category.name}</span>
-                  ) : (
-                    <span className="text-blue-400/60">-</span>
-                  )}
-                </DataTableCell>
-                <DataTableCell>
-                  {product.subcategory?.name ? (
-                    <span className="text-blue-600/80 text-sm">{product.subcategory.name}</span>
-                  ) : (
-                    <span className="text-blue-400/60">-</span>
-                  )}
-                </DataTableCell>
-                <DataTableCell align="center">
-                  <div className="flex justify-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleEditClick(product)}
-                      className="h-9 w-9 hover:bg-blue-700 hover:text-white hover:border-blue-700 transition-all duration-200"
-                      title="Edit product"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleDeleteProduct(product.id)}
-                      className="h-9 w-9 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300"
-                      title="Delete product"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </DataTableCell>
-              </DataTableRow>
-            ))}
-          </DataTable>
-        )}
-      </SectionCard>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <Card className="overflow-hidden border-2 border-blue-300 bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Total Inventory Cost</p>
-                <p className="text-3xl font-bold text-blue-900">
-                  {totalProductsCost.toFixed(2)}
-                </p>
-                <p className="text-xs text-blue-600/70">Sum of (Quantity × Cost) for all products</p>
-              </div>
-              <div className="p-4 rounded-md bg-blue-100">
-                <DollarSign className="h-8 w-8 text-blue-700" />
-              </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Products List</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Spinner size="lg" text="Loading products..." />
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden border-2 border-blue-400 bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-blue-800 uppercase tracking-wide">Total Inventory Value</p>
-                <p className="text-3xl font-bold text-blue-900">
-                  {totalProductsValue.toFixed(2)}
-                </p>
-                <p className="text-xs text-blue-600/70">Sum of (Quantity × Price) for all products</p>
-              </div>
-              <div className="p-4 rounded-md bg-blue-100">
-                <TrendingUp className="h-8 w-8 text-blue-700" />
-              </div>
+          ) : filteredProducts.length === 0 ? (
+            <p className="text-muted-foreground">
+              {searchTerm ? "No products found matching your search." : "No products found. Add your first product!"}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse min-w-[1000px]">
+                <thead>
+                  <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Image</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Code</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Description</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Quantity</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Cost</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Price</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Brand</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Category</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Sub Category</th>
+                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((product) => (
+                    <tr key={product.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
+                      <td className="p-2 sm:p-4">
+                        {product.image ? (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none"
+                            }}
+                          />
+                        ) : (
+                          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-200 rounded-lg flex items-center justify-center">
+                            <ImageIcon className="h-6 w-6 text-slate-400" />
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{product.name}</td>
+                      <td className="p-2 sm:p-4">
+                        <Badge variant="outline" className="text-xs sm:text-sm">
+                          {product.code}
+                        </Badge>
+                      </td>
+                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base max-w-xs truncate" title={product.description || ""}>
+                        {product.description || "-"}
+                      </td>
+                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{product.quantity.toFixed(2)}</td>
+                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{product.product_cost.toFixed(2)}</td>
+                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{product.price.toFixed(2)}</td>
+                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">
+                        {product.company_brand?.name || "-"}
+                      </td>
+                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">
+                        {product.category?.name || "-"}
+                      </td>
+                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">
+                        {product.subcategory?.name || "-"}
+                      </td>
+                      <td className="text-center p-2 sm:p-4">
+                        <div className="flex justify-center gap-1 sm:gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleEditClick(product)}
+                            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200"
+                            title="Edit product"
+                          >
+                            <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200"
+                            title="Delete product"
+                          >
+                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </PageContainer>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Total Cost Calculation Box */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex justify-between items-center gap-4 p-4 bg-warning/10 rounded-lg border-2 border-warning/30">
+              <span className="text-base font-semibold text-black">Total Cost:</span>
+              <Badge variant="warning" className="text-xl font-bold">
+                {totalProductsCost.toFixed(2)}
+              </Badge>
+            </div>
+            <div className="flex justify-between items-center gap-4 p-4 bg-success/10 rounded-lg border-2 border-success/30">
+              <span className="text-base font-semibold text-black">Total Value:</span>
+              <Badge variant="success" className="text-xl font-bold">
+                {totalProductsValue.toFixed(2)}
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

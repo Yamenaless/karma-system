@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Select } from "@/components/ui/select"
-import { addTransformation, getTransformationsByDate, getTransformationsByDateRange, updateTransformation, deleteTransformation } from "@/app/actions/products"
+import { addTransformation, getTransformationsByDate, getTransformationsByDateRange, updateTransformation, deleteTransformation, getAllTransformations } from "@/app/actions/products"
 import { DailyTransformation, TransformationFormData } from "@/types/database"
 import { Plus, Pencil, Trash2, DollarSign } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
@@ -57,6 +57,7 @@ export function TransformationsContent() {
   })
   
   const [dateFilter, setDateFilter] = useState<string>("custom")
+  const [showAll, setShowAll] = useState(false)
 
   const [transformations, setTransformations] = useState<DailyTransformation[]>([])
   const [loading, setLoading] = useState(true)
@@ -77,7 +78,9 @@ export function TransformationsContent() {
     setError(null)
     try {
       let result
-      if (dateFilter === "custom") {
+      if (showAll) {
+        result = await getAllTransformations()
+      } else if (dateFilter === "custom") {
         result = await getTransformationsByDate(date)
       } else {
         const { startDate, endDate } = getDateRangeByFilter(dateFilter)
@@ -101,7 +104,7 @@ export function TransformationsContent() {
 
   useEffect(() => {
     loadTransformations()
-  }, [date, dateFilter])
+  }, [date, dateFilter, showAll])
 
   const handleAddTransformation = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -176,7 +179,9 @@ export function TransformationsContent() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Daily Transformations</h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-            {dateFilter === "custom" ? (
+            {showAll ? (
+              <>Showing <span className="font-semibold">All Transformations</span></>
+            ) : dateFilter === "custom" ? (
               <>Date: <span className="font-semibold">{date}</span></>
             ) : (
               <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span></>
@@ -184,34 +189,50 @@ export function TransformationsContent() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Select
-            value={dateFilter}
-            onChange={(e) => {
-              const filter = e.target.value
-              setDateFilter(filter)
-              if (filter !== "custom") {
-                const { endDate } = getDateRangeByFilter(filter)
-                setDate(endDate)
+          <Button
+            variant={showAll ? "default" : "outline"}
+            onClick={() => {
+              setShowAll(!showAll)
+              if (!showAll) {
+                setDateFilter("custom")
               }
             }}
             className="w-full sm:w-auto"
           >
-            <option value="custom">Custom Date</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="1day">1 Day</option>
-            <option value="1week">1 Week</option>
-            <option value="1month">1 Month</option>
-            <option value="1year">1 Year</option>
-          </Select>
-          <Input
-            type="date"
-            value={date}
-            onChange={(e) => {
-              setDate(e.target.value)
-              setDateFilter("custom")
-            }}
-            className="w-full sm:w-auto"
-          />
+            {showAll ? "Show Filtered" : "Show All Transformations"}
+          </Button>
+          {!showAll && (
+            <>
+              <Select
+                value={dateFilter}
+                onChange={(e) => {
+                  const filter = e.target.value
+                  setDateFilter(filter)
+                  if (filter !== "custom") {
+                    const { endDate } = getDateRangeByFilter(filter)
+                    setDate(endDate)
+                  }
+                }}
+                className="w-full sm:w-auto"
+              >
+                <option value="custom">Custom Date</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="1day">1 Day</option>
+                <option value="1week">1 Week</option>
+                <option value="1month">1 Month</option>
+                <option value="1year">1 Year</option>
+              </Select>
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) => {
+                  setDate(e.target.value)
+                  setDateFilter("custom")
+                }}
+                className="w-full sm:w-auto"
+              />
+            </>
+          )}
         </div>
       </div>
 
@@ -448,7 +469,7 @@ export function TransformationsContent() {
           <CardTitle>Daily Totals</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
               <p className="text-xs sm:text-sm font-medium text-slate-600">Total Selling Price</p>
               <Badge variant="default" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">

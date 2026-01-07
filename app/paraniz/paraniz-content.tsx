@@ -12,12 +12,12 @@ import {
   addParanizSale,
   getParanizSalesByDate,
   getParanizSalesByDateRange,
-  getAllParanizSales,
   updateParanizSale,
-  deleteParanizSale
+  deleteParanizSale,
+  getAllParanizSales
 } from "@/app/actions/paraniz"
 import { DailyParanizSale, ParanizSaleFormData } from "@/types/database"
-import { Plus, Pencil, Trash2, List } from "lucide-react"
+import { Plus, Pencil, Trash2 } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
@@ -64,7 +64,7 @@ export function ParanizContent() {
   })
   
   const [dateFilter, setDateFilter] = useState<string>("custom")
-  const [showAllSales, setShowAllSales] = useState<boolean>(false)
+  const [showAll, setShowAll] = useState(false)
 
   const [paranizSales, setParanizSales] = useState<DailyParanizSale[]>([])
   const [salesLoading, setSalesLoading] = useState(true)
@@ -85,7 +85,7 @@ export function ParanizContent() {
   const loadParanizSales = async () => {
     setSalesLoading(true)
     let result
-    if (showAllSales) {
+    if (showAll) {
       result = await getAllParanizSales()
     } else if (dateFilter === "custom") {
       result = await getParanizSalesByDate(date)
@@ -101,7 +101,7 @@ export function ParanizContent() {
 
   useEffect(() => {
     loadParanizSales()
-  }, [date, dateFilter, showAllSales])
+  }, [date, dateFilter, showAll])
 
   // Sales handlers
   const handleAddSale = async (e: React.FormEvent) => {
@@ -182,8 +182,8 @@ export function ParanizContent() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Daily Paraniz</h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-            {showAllSales ? (
-              <>Showing <span className="font-semibold">All Transactions</span></>
+            {showAll ? (
+              <>Showing <span className="font-semibold">All Paraniz Sales</span></>
             ) : dateFilter === "custom" ? (
               <>Date: <span className="font-semibold">{date}</span></>
             ) : (
@@ -193,19 +193,18 @@ export function ParanizContent() {
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button
-            variant={showAllSales ? "default" : "outline"}
+            variant={showAll ? "default" : "outline"}
             onClick={() => {
-              setShowAllSales(!showAllSales)
-              if (!showAllSales) {
+              setShowAll(!showAll)
+              if (!showAll) {
                 setDateFilter("custom")
               }
             }}
             className="w-full sm:w-auto"
           >
-            <List className="mr-2 h-4 w-4" />
-            {showAllSales ? "Show Filtered" : "Show All"}
+            {showAll ? "Show Filtered" : "Show All Paraniz"}
           </Button>
-          {!showAllSales && (
+          {!showAll && (
             <>
               <Select
                 value={dateFilter}
@@ -264,7 +263,7 @@ export function ParanizContent() {
                 required
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="sale-amount">Amount</Label>
                 <Input
@@ -349,7 +348,7 @@ export function ParanizContent() {
                 required
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="edit-sale-amount">Amount</Label>
                 <Input
@@ -458,39 +457,32 @@ export function ParanizContent() {
               <Spinner size="lg" text="Loading paraniz sales..." />
             </div>
           ) : filteredSales.length === 0 ? (
-            <p className="text-muted-foreground">
-              {showAllSales 
-                ? `No paraniz sales found${categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.`
-                : `No paraniz sales for this date${categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.`
-              }
-            </p>
+            <p className="text-muted-foreground">No paraniz sales for this date{categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse min-w-[700px]">
+              <table className="w-full border-collapse min-w-[700px] border border-black">
                 <thead>
-                  <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Date</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Category</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Subscription Number</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Amount</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Cost</th>
-                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
+                  <tr className="border-b-2 border-black bg-gray-100">
+                    <th className="text-left p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Name</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Category</th>
+                    <th className="text-left p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Subscription Number</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Amount</th>
+                    <th className="text-right p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Cost</th>
+                    <th className="text-center p-2 sm:p-4 font-semibold text-black text-xs sm:text-base">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredSales.map((sale) => (
-                    <tr key={sale.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
-                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{sale.date}</td>
-                      <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{sale.name}</td>
-                      <td className="p-2 sm:p-4">
+                    <tr key={sale.id} className="border-b border-black hover:bg-gray-50 transition-colors">
+                      <td className="p-2 sm:p-4 font-medium text-black text-xs sm:text-base border-r border-black">{sale.name}</td>
+                      <td className="p-2 sm:p-4 border-r border-black">
                         <Badge variant={sale.category === "FATURA" ? "default" : "secondary"} className="font-semibold text-xs sm:text-sm">
                           {sale.category}
                         </Badge>
                       </td>
-                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{sale.subscriptionNumber || "-"}</td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{sale.amount.toFixed(2)}</td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{sale.cost.toFixed(2)}</td>
+                      <td className="p-2 sm:p-4 text-gray-700 text-xs sm:text-base border-r border-black">{sale.subscriptionNumber || "-"}</td>
+                      <td className="text-right p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">{sale.amount.toFixed(2)}</td>
+                      <td className="text-right p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">{sale.cost.toFixed(2)}</td>
                       <td className="text-center p-2 sm:p-4">
                         <div className="flex justify-center gap-1 sm:gap-2">
                           <Button
@@ -528,15 +520,15 @@ export function ParanizContent() {
           <CardTitle>Daily Totals</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-              <p className="text-xs sm:text-sm font-medium text-slate-600">Total Paraniz Sales Amount</p>
-              <Badge variant="default" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-info/10 border-2 border-info/30">
+              <p className="text-xs sm:text-sm font-medium text-gray-700">Total Paraniz Sales Amount</p>
+              <Badge variant="info" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
                 {totalParanizSales.toFixed(2)}
               </Badge>
             </div>
-            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200">
-              <p className="text-xs sm:text-sm font-medium text-slate-600">Total Paraniz Sales Cost</p>
+            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-destructive/10 border-2 border-destructive/30">
+              <p className="text-xs sm:text-sm font-medium text-gray-700">Total Paraniz Sales Cost</p>
               <Badge variant="destructive" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
                 {totalParanizCost.toFixed(2)}
               </Badge>

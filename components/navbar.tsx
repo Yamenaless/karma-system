@@ -45,14 +45,14 @@ export function Navbar() {
   ]
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-blue-200 bg-white/95 backdrop-blur-xl shadow-md">
+    <nav className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-lg shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-blue-700 shadow-md hover:shadow-lg transition-all duration-200">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg">
               <span className="text-xl font-bold text-white">K</span>
             </div>
-            <h1 className="text-lg sm:text-xl font-bold text-blue-900">
+            <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               <span className="hidden sm:inline">Karama System</span>
               <span className="sm:hidden">Karama</span>
             </h1>
@@ -69,8 +69,8 @@ export function Navbar() {
                     className={cn(
                       "gap-2 transition-all duration-200",
                       isActive 
-                        ? "bg-blue-700 text-white shadow-md hover:bg-blue-800" 
-                        : "hover:bg-blue-50 hover:text-blue-700"
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md hover:shadow-lg hover:scale-105" 
+                        : "hover:bg-slate-100 hover:text-blue-600"
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -92,7 +92,7 @@ export function Navbar() {
         </div>
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-blue-200 py-2">
+          <div className="md:hidden border-t py-2">
             <div className="flex flex-col gap-1">
               {navItems.map((item) => {
                 const Icon = item.icon
@@ -104,8 +104,8 @@ export function Navbar() {
                       className={cn(
                         "w-full justify-start gap-2 transition-all duration-200",
                         isActive 
-                          ? "bg-blue-700 text-white shadow-md" 
-                          : "hover:bg-blue-50 hover:text-blue-700"
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md" 
+                          : "hover:bg-slate-100 hover:text-blue-600"
                       )}
                     >
                       <Icon className="h-4 w-4" />

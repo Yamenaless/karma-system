@@ -91,22 +91,6 @@ export async function getTotalExpensesByDateRange(startDate: string, endDate: st
   return { success: true, total }
 }
 
-export async function getAllExpenses() {
-  const supabase = createServerClient()
-  
-  const { data, error } = await supabase
-    .from("daily_expenses")
-    .select("*")
-    .order("date", { ascending: false })
-    .order("created_at", { ascending: false })
-
-  if (error) {
-    return { success: false, error: error.message, data: null }
-  }
-
-  return { success: true, data: data || [] }
-}
-
 export async function updateExpense(id: string, data: ExpenseFormData) {
   const supabase = createServerClient()
   
@@ -142,5 +126,20 @@ export async function deleteExpense(id: string) {
   revalidatePath("/expenses")
   revalidatePath("/dashboard")
   return { success: true }
+}
+
+export async function getAllExpenses() {
+  const supabase = createServerClient()
+  
+  const { data, error } = await supabase
+    .from("daily_expenses")
+    .select("*")
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    return { success: false, error: error.message, data: null }
+  }
+
+  return { success: true, data: data || [] }
 }
 

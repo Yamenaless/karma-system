@@ -5,19 +5,25 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-semibold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
   {
     variants: {
       variant: {
-        default: "bg-blue-700 text-white shadow-md hover:bg-blue-800 hover:shadow-lg transition-all duration-200",
+        default: "bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:opacity-90 border border-primary",
         destructive:
-          "bg-red-600 text-white shadow-md hover:bg-red-700 hover:shadow-lg transition-all duration-200",
+          "bg-destructive text-destructive-foreground shadow-md hover:shadow-lg hover:opacity-90 border border-destructive",
+        success:
+          "bg-success text-success-foreground shadow-md hover:shadow-lg hover:opacity-90 border border-success",
+        warning:
+          "bg-warning text-warning-foreground shadow-md hover:shadow-lg hover:opacity-90 border border-warning",
+        info:
+          "bg-info text-info-foreground shadow-md hover:shadow-lg hover:opacity-90 border border-info",
         outline:
-          "border-2 border-blue-300 bg-white hover:bg-blue-50 hover:border-blue-500 hover:text-blue-700 shadow-sm hover:shadow-md transition-all duration-200",
+          "border-2 border-primary bg-white text-primary hover:bg-primary/10 hover:border-primary shadow-sm hover:shadow-md",
         secondary:
-          "bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200",
-        ghost: "hover:bg-blue-50 hover:text-blue-700 transition-all duration-200",
-        link: "text-blue-700 underline-offset-4 hover:underline hover:text-blue-800 transition-all duration-200",
+          "bg-secondary text-secondary-foreground hover:bg-gray-200 border border-black shadow-sm hover:shadow-md",
+        ghost: "hover:bg-gray-100 hover:text-primary text-black",
+        link: "text-primary underline-offset-4 hover:underline hover:text-primary/80",
       },
       size: {
         default: "h-11 px-6 py-2",
