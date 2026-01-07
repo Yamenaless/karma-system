@@ -168,12 +168,12 @@ export function DebtsContent() {
   const totalPaid = debts.filter((d) => d.is_paid).reduce((sum, d) => sum + (d.amount || 0), 0)
 
   return (
-    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Debts</h1>
-          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Debts</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {showAll ? (
               <>Showing <span className="font-semibold">All Debts</span></>
             ) : dateFilter === "custom" ? (
@@ -382,34 +382,43 @@ export function DebtsContent() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <Card className="border-primary/30 bg-primary/5">
-          <CardHeader>
-            <CardTitle className="text-xs sm:text-sm font-medium">Total Debts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge variant="default" className="text-base sm:text-lg px-3 sm:px-4 py-2">
-              {totalDebts.toFixed(2)}
-            </Badge>
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-gray-600 mb-1">Total Debts</p>
+                <p className="text-2xl font-bold text-gray-900">{totalDebts.toFixed(2)}</p>
+              </div>
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <span className="text-primary text-lg">💰</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
-        <Card className="border-destructive/30 bg-destructive/5">
-          <CardHeader>
-            <CardTitle className="text-xs sm:text-sm font-medium">Unpaid Debts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge variant="destructive" className="text-base sm:text-lg px-3 sm:px-4 py-2">
-              {totalUnpaid.toFixed(2)}
-            </Badge>
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-gray-600 mb-1">Unpaid Debts</p>
+                <p className="text-2xl font-bold text-destructive">{totalUnpaid.toFixed(2)}</p>
+              </div>
+              <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center">
+                <span className="text-destructive text-lg">⚠️</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
-        <Card className="border-success/30 bg-success/5">
-          <CardHeader>
-            <CardTitle className="text-xs sm:text-sm font-medium">Paid Debts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge variant="success" className="text-base sm:text-lg px-3 sm:px-4 py-2">
-              {totalPaid.toFixed(2)}
-            </Badge>
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-gray-600 mb-1">Paid Debts</p>
+                <p className="text-2xl font-bold text-success">{totalPaid.toFixed(2)}</p>
+              </div>
+              <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
+                <span className="text-success text-lg">✅</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -419,7 +428,7 @@ export function DebtsContent() {
         <CardHeader>
           <CardTitle>Debts</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading debts..." />
@@ -427,26 +436,28 @@ export function DebtsContent() {
           ) : debts.length === 0 ? (
             <p className="text-muted-foreground">No debts for this date.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
               <table className="w-full border-collapse min-w-[700px]">
                 <thead>
-                  <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Customer</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Product</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Cost</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Amount</th>
-                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Status</th>
-                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
+                  <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Customer</th>
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Product</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Cost</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Amount</th>
+                    <th className="text-center p-3 font-semibold text-gray-700 text-sm">Status</th>
+                    <th className="text-center p-3 font-semibold text-gray-700 text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {debts.map((debt) => (
-                    <tr key={debt.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
-                      <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{debt.customer_name}</td>
-                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{debt.product_name}</td>
-                      <td className="text-right p-2 sm:p-4 text-slate-700 text-xs sm:text-base">${(debt.product_cost || 0).toFixed(2)}</td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{debt.amount.toFixed(2)}</td>
-                      <td className="text-center p-2 sm:p-4">
+                  {debts.map((debt, index) => (
+                    <tr key={debt.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                    }`}>
+                      <td className="p-3 font-medium text-gray-900 text-sm">{debt.customer_name}</td>
+                      <td className="p-3 text-gray-700 text-sm">{debt.product_name}</td>
+                      <td className="text-right p-3 text-gray-700 text-sm">${(debt.product_cost || 0).toFixed(2)}</td>
+                      <td className="text-right p-3 font-semibold text-gray-900 text-sm">{debt.amount.toFixed(2)}</td>
+                      <td className="text-center p-3">
                         <Badge
                           variant={debt.is_paid ? "default" : "destructive"}
                           className={debt.is_paid ? "bg-green-600 text-xs sm:text-sm" : "text-xs sm:text-sm"}

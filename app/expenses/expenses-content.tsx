@@ -148,12 +148,12 @@ export function ExpensesContent() {
   const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0)
 
   return (
-    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Daily Expenses</h1>
-          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Daily Expenses</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {showAll ? (
               <>Showing <span className="font-semibold">All Expenses</span></>
             ) : dateFilter === "custom" ? (
@@ -317,7 +317,7 @@ export function ExpensesContent() {
         <CardHeader>
           <CardTitle>Expenses</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading expenses..." />
@@ -325,21 +325,23 @@ export function ExpensesContent() {
           ) : expenses.length === 0 ? (
             <p className="text-muted-foreground">No expenses for this date.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
               <table className="w-full border-collapse min-w-[400px]">
                 <thead>
-                  <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Amount</th>
-                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
+                  <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Name</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Amount</th>
+                    <th className="text-center p-3 font-semibold text-gray-700 text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {expenses.map((expense) => (
-                    <tr key={expense.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
-                      <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{expense.name}</td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{expense.amount.toFixed(2)}</td>
-                      <td className="text-center p-2 sm:p-4">
+                  {expenses.map((expense, index) => (
+                    <tr key={expense.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                    }`}>
+                      <td className="p-3 font-medium text-gray-900 text-sm">{expense.name}</td>
+                      <td className="text-right p-3 font-semibold text-gray-900 text-sm">{expense.amount.toFixed(2)}</td>
+                      <td className="text-center p-3">
                         <div className="flex justify-center gap-1 sm:gap-2">
                           <Button
                             variant="outline"
@@ -375,7 +377,7 @@ export function ExpensesContent() {
         <CardHeader>
           <CardTitle>Total Expenses</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           <div className="flex justify-center">
             <Badge variant="default" className="text-base sm:text-lg px-4 sm:px-6 py-2 sm:py-3">
               {totalExpenses.toFixed(2)}

@@ -276,12 +276,12 @@ export function ProductsContent() {
   }, 0)
 
   return (
-    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Products</h1>
-          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Products</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">
             Total Products: <span className="font-semibold">{products.length}</span>
           </p>
         </div>
@@ -697,7 +697,7 @@ export function ProductsContent() {
         <CardHeader>
           <CardTitle>Products List</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading products..." />
@@ -707,27 +707,29 @@ export function ProductsContent() {
               {searchTerm ? "No products found matching your search." : "No products found. Add your first product!"}
             </p>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
               <table className="w-full border-collapse min-w-[1000px]">
                 <thead>
-                  <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Image</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Code</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Description</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Quantity</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Cost</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Price</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Brand</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Category</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Sub Category</th>
-                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
+                  <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Image</th>
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Name</th>
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Code</th>
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Description</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Quantity</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Cost</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Price</th>
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Brand</th>
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Category</th>
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Sub Category</th>
+                    <th className="text-center p-3 font-semibold text-gray-700 text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProducts.map((product) => (
-                    <tr key={product.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
-                      <td className="p-2 sm:p-4">
+                  {filteredProducts.map((product, index) => (
+                    <tr key={product.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                    }`}>
+                      <td className="p-3">
                         {product.image ? (
                           <img
                             src={product.image}
@@ -738,33 +740,33 @@ export function ProductsContent() {
                             }}
                           />
                         ) : (
-                          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-200 rounded-lg flex items-center justify-center">
-                            <ImageIcon className="h-6 w-6 text-slate-400" />
+                          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <ImageIcon className="h-6 w-6 text-gray-400" />
                           </div>
                         )}
                       </td>
-                      <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{product.name}</td>
-                      <td className="p-2 sm:p-4">
-                        <Badge variant="outline" className="text-xs sm:text-sm">
+                      <td className="p-3 font-medium text-gray-900 text-sm">{product.name}</td>
+                      <td className="p-3">
+                        <Badge variant="outline" className="text-xs">
                           {product.code}
                         </Badge>
                       </td>
-                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base max-w-xs truncate" title={product.description || ""}>
+                      <td className="p-3 text-gray-700 text-sm max-w-xs truncate" title={product.description || ""}>
                         {product.description || "-"}
                       </td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{product.quantity.toFixed(2)}</td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{product.product_cost.toFixed(2)}</td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{product.price.toFixed(2)}</td>
-                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">
+                      <td className="text-right p-3 font-semibold text-gray-900 text-sm">{product.quantity.toFixed(2)}</td>
+                      <td className="text-right p-3 font-semibold text-gray-900 text-sm">{product.product_cost.toFixed(2)}</td>
+                      <td className="text-right p-3 font-semibold text-gray-900 text-sm">{product.price.toFixed(2)}</td>
+                      <td className="p-3 text-gray-700 text-sm">
                         {product.company_brand?.name || "-"}
                       </td>
-                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">
+                      <td className="p-3 text-gray-700 text-sm">
                         {product.category?.name || "-"}
                       </td>
-                      <td className="p-2 sm:p-4 text-slate-700 text-xs sm:text-base">
+                      <td className="p-3 text-gray-700 text-sm">
                         {product.subcategory?.name || "-"}
                       </td>
-                      <td className="text-center p-2 sm:p-4">
+                      <td className="text-center p-3">
                         <div className="flex justify-center gap-1 sm:gap-2">
                           <Button
                             variant="outline"

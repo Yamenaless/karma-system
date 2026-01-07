@@ -60,7 +60,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-white text-black antialiased;
+    @apply bg-gray-50 text-gray-900 antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

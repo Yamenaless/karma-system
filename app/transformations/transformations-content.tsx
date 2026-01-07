@@ -173,12 +173,12 @@ export function TransformationsContent() {
   )
 
   return (
-    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Daily Transformations</h1>
-          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Daily Transformations</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {showAll ? (
               <>Showing <span className="font-semibold">All Transformations</span></>
             ) : dateFilter === "custom" ? (
@@ -398,7 +398,7 @@ export function TransformationsContent() {
         <CardHeader>
           <CardTitle>Transformations</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading transformations..." />
@@ -414,25 +414,27 @@ export function TransformationsContent() {
           ) : transformations.length === 0 ? (
             <p className="text-muted-foreground">No transformations for this date.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
               <table className="w-full border-collapse min-w-[600px]">
                 <thead>
-                  <tr className="border-b-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-                    <th className="text-left p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Name</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Quantity</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Dollar Rate</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Selling Price</th>
-                    <th className="text-center p-2 sm:p-4 font-semibold text-slate-700 text-xs sm:text-base">Actions</th>
+                  <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Name</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Quantity</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Dollar Rate</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Selling Price</th>
+                    <th className="text-center p-3 font-semibold text-gray-700 text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {transformations.map((transformation) => (
-                    <tr key={transformation.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-colors">
-                      <td className="p-2 sm:p-4 font-medium text-slate-900 text-xs sm:text-base">{transformation.name}</td>
-                      <td className="text-right p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{transformation.quantity.toFixed(2)}</td>
-                      <td className="text-right p-2 sm:p-4 text-slate-700 text-xs sm:text-base">{transformation.dollarRate.toFixed(2)}</td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-slate-900 text-xs sm:text-base">{transformation.sellingPrice.toFixed(2)}</td>
-                      <td className="text-center p-2 sm:p-4">
+                  {transformations.map((transformation, index) => (
+                    <tr key={transformation.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                    }`}>
+                      <td className="p-3 font-medium text-gray-900 text-sm">{transformation.name}</td>
+                      <td className="text-right p-3 text-gray-700 text-sm">{transformation.quantity.toFixed(2)}</td>
+                      <td className="text-right p-3 text-gray-700 text-sm">${transformation.dollarRate.toFixed(2)}</td>
+                      <td className="text-right p-3 font-semibold text-gray-900 text-sm">{transformation.sellingPrice.toFixed(2)}</td>
+                      <td className="text-center p-3">
                         <div className="flex justify-center gap-1 sm:gap-2">
                           <Button
                             variant="outline"
@@ -468,7 +470,7 @@ export function TransformationsContent() {
         <CardHeader>
           <CardTitle>Daily Totals</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
               <p className="text-xs sm:text-sm font-medium text-slate-600">Total Selling Price</p>

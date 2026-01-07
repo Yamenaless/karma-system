@@ -67,17 +67,17 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-full w-64 border-r border-black bg-white transition-transform duration-300",
+          "fixed left-0 top-0 z-40 h-full w-64 border-r border-gray-200 bg-white transition-transform duration-300",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
         <div className="flex h-full flex-col">
           {/* Logo Section */}
-          <div className="flex h-16 items-center gap-3 border-b border-black px-6">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="text-xl font-bold text-primary-foreground">K</span>
+          <div className="flex h-16 items-center gap-3 border-b border-gray-200 px-6">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
+              <span className="text-xl font-bold text-white">K</span>
             </div>
-            <h1 className="text-lg font-bold text-black">
+            <h1 className="text-lg font-bold text-gray-900">
               <span className="hidden sm:inline">Karama System</span>
               <span className="sm:hidden">Karama</span>
             </h1>
@@ -90,18 +90,17 @@ export function Sidebar() {
               const isActive = pathname === item.href
               return (
                 <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
-                  <Button
-                    variant={isActive ? "default" : "ghost"}
+                  <div
                     className={cn(
-                      "w-full justify-start gap-3 transition-all duration-200",
+                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 cursor-pointer",
                       isActive
-                        ? "bg-primary text-primary-foreground hover:opacity-90"
-                        : "text-black hover:bg-primary/10 hover:text-primary"
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-primary"
                     )}
                   >
-                    <Icon className="h-5 w-5" />
-                    {item.label}
-                  </Button>
+                    <Icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-gray-600")} />
+                    <span className="text-sm">{item.label}</span>
+                  </div>
                 </Link>
               )
             })}

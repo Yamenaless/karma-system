@@ -176,12 +176,12 @@ export function ParanizContent() {
   const totalParanizCost = filteredSales.reduce((sum, s) => sum + (s.cost || 0), 0)
 
   return (
-    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Daily Paraniz</h1>
-          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Daily Paraniz</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {showAll ? (
               <>Showing <span className="font-semibold">All Paraniz Sales</span></>
             ) : dateFilter === "custom" ? (
@@ -451,7 +451,7 @@ export function ParanizContent() {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           {salesLoading ? (
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading paraniz sales..." />
@@ -459,30 +459,32 @@ export function ParanizContent() {
           ) : filteredSales.length === 0 ? (
             <p className="text-muted-foreground">No paraniz sales for this date{categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse min-w-[700px] border border-black">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
+              <table className="w-full border-collapse min-w-[700px]">
                 <thead>
-                  <tr className="border-b-2 border-black bg-gray-100">
-                    <th className="text-left p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Name</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Category</th>
-                    <th className="text-left p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Subscription Number</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Amount</th>
-                    <th className="text-right p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">Cost</th>
-                    <th className="text-center p-2 sm:p-4 font-semibold text-black text-xs sm:text-base">Actions</th>
+                  <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Name</th>
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Category</th>
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Subscription Number</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Amount</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Cost</th>
+                    <th className="text-center p-3 font-semibold text-gray-700 text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredSales.map((sale) => (
-                    <tr key={sale.id} className="border-b border-black hover:bg-gray-50 transition-colors">
-                      <td className="p-2 sm:p-4 font-medium text-black text-xs sm:text-base border-r border-black">{sale.name}</td>
-                      <td className="p-2 sm:p-4 border-r border-black">
-                        <Badge variant={sale.category === "FATURA" ? "default" : "secondary"} className="font-semibold text-xs sm:text-sm">
+                  {filteredSales.map((sale, index) => (
+                    <tr key={sale.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                    }`}>
+                      <td className="p-3 font-medium text-gray-900 text-sm">{sale.name}</td>
+                      <td className="p-3">
+                        <Badge variant={sale.category === "FATURA" ? "default" : "secondary"} className="font-medium text-xs">
                           {sale.category}
                         </Badge>
                       </td>
-                      <td className="p-2 sm:p-4 text-gray-700 text-xs sm:text-base border-r border-black">{sale.subscriptionNumber || "-"}</td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">{sale.amount.toFixed(2)}</td>
-                      <td className="text-right p-2 sm:p-4 font-semibold text-black text-xs sm:text-base border-r border-black">{sale.cost.toFixed(2)}</td>
+                      <td className="p-3 text-gray-600 text-sm">{sale.subscriptionNumber || "-"}</td>
+                      <td className="text-right p-3 font-semibold text-gray-900 text-sm">{sale.amount.toFixed(2)}</td>
+                      <td className="text-right p-3 font-semibold text-gray-900 text-sm">{sale.cost.toFixed(2)}</td>
                       <td className="text-center p-2 sm:p-4">
                         <div className="flex justify-center gap-1 sm:gap-2">
                           <Button
@@ -519,7 +521,7 @@ export function ParanizContent() {
         <CardHeader>
           <CardTitle>Daily Totals</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-info/10 border-2 border-info/30">
               <p className="text-xs sm:text-sm font-medium text-gray-700">Total Paraniz Sales Amount</p>

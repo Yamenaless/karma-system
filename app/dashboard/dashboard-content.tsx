@@ -192,12 +192,12 @@ export function DashboardContent() {
   const totalUnpaidCosts = unpaidDebts.reduce((sum, debt) => sum + (debt.product_cost || 0), 0)
 
   return (
-    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-black">Daily Accounting System</h1>
-          <p className="text-gray-600 mt-1 text-sm sm:text-base">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Daily Accounting System</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {dateFilter === "custom" ? (
               <>Date: <span className="font-semibold text-black">{date}</span></>
             ) : (
@@ -215,14 +215,14 @@ export function DashboardContent() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-6xl max-h-[85vh] overflow-hidden flex flex-col w-[95vw] sm:w-full">
-                <DialogHeader className="pb-4 border-b-2 border-destructive/30">
+                <DialogHeader className="pb-4 border-b border-gray-200">
                   <DialogTitle className="flex items-center gap-3 text-xl sm:text-2xl font-bold">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/20 border-2 border-destructive">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 border border-destructive/30">
                       <AlertCircle className="h-6 w-6 text-destructive" />
                     </div>
                     <div>
-                      <div className="text-destructive">Unpaid Debts Reminder</div>
-                      <div className="text-sm font-normal text-gray-600 mt-1">
+                      <div className="text-gray-900">Unpaid Debts Reminder</div>
+                      <div className="text-sm font-normal text-gray-500 mt-1">
                         {unpaidDebts.length} unpaid debt{unpaidDebts.length > 1 ? "s" : ""} require attention
                       </div>
                     </div>
@@ -231,49 +231,49 @@ export function DashboardContent() {
                 
                 <div className="flex-1 overflow-y-auto space-y-4 py-4">
                   {/* Summary Alert */}
-                  <div className="p-4 rounded-xl bg-destructive/10 border-2 border-destructive/30 shadow-sm">
+                  <div className="p-4 rounded-lg bg-destructive/5 border border-destructive/20">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <div>
-                        <p className="text-sm font-medium text-gray-700 mb-1">Total Unpaid Amount</p>
+                        <p className="text-xs font-medium text-gray-600 mb-1">Total Unpaid Amount</p>
                         <p className="text-2xl font-bold text-destructive">
                           {totalUnpaidAmount.toFixed(2)}
                         </p>
                       </div>
-                      <Badge variant="destructive" className="text-lg px-4 py-2">
+                      <Badge variant="destructive" className="text-sm px-3 py-1.5">
                         {unpaidDebts.length} Item{unpaidDebts.length > 1 ? "s" : ""}
                       </Badge>
                     </div>
                   </div>
 
                   {/* Debts Table */}
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-black text-base sm:text-lg flex items-center gap-2">
-                      <span className="h-1 w-1 rounded-full bg-destructive"></span>
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-gray-900 text-base flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-destructive"></span>
                       Unpaid Debts List
                     </h3>
-                    <div className="overflow-x-auto rounded-lg border-2 border-black">
+                    <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
                       <table className="w-full border-collapse min-w-[600px]">
                         <thead>
-                          <tr className="border-b-2 border-black bg-destructive/10">
-                            <th className="text-left p-3 font-semibold text-black text-sm border-r border-black">Date</th>
-                            <th className="text-left p-3 font-semibold text-black text-sm border-r border-black">Customer</th>
-                            <th className="text-left p-3 font-semibold text-black text-sm border-r border-black">Product</th>
-                            <th className="text-right p-3 font-semibold text-black text-sm border-r border-black">Cost ($)</th>
-                            <th className="text-right p-3 font-semibold text-black text-sm">Amount</th>
+                          <tr className="border-b border-gray-200 bg-gray-50">
+                            <th className="text-left p-3 font-semibold text-gray-700 text-sm">Date</th>
+                            <th className="text-left p-3 font-semibold text-gray-700 text-sm">Customer</th>
+                            <th className="text-left p-3 font-semibold text-gray-700 text-sm">Product</th>
+                            <th className="text-right p-3 font-semibold text-gray-700 text-sm">Cost ($)</th>
+                            <th className="text-right p-3 font-semibold text-gray-700 text-sm">Amount</th>
                           </tr>
                         </thead>
                         <tbody>
                           {unpaidDebts.map((debt, index) => (
                             <tr 
                               key={debt.id} 
-                              className={`border-b border-black/20 hover:bg-destructive/5 transition-colors ${
-                                index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                              className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                                index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                               }`}
                             >
-                              <td className="p-3 text-sm text-gray-700 border-r border-black/20 font-medium">{debt.date}</td>
-                              <td className="p-3 text-sm font-semibold text-black border-r border-black/20">{debt.customer_name}</td>
-                              <td className="p-3 text-sm text-gray-800 border-r border-black/20">{debt.product_name}</td>
-                              <td className="text-right p-3 text-sm text-gray-800 border-r border-black/20 font-medium">${(debt.product_cost || 0).toFixed(2)}</td>
+                              <td className="p-3 text-sm text-gray-600 font-medium">{debt.date}</td>
+                              <td className="p-3 text-sm font-semibold text-gray-900">{debt.customer_name}</td>
+                              <td className="p-3 text-sm text-gray-700">{debt.product_name}</td>
+                              <td className="text-right p-3 text-sm text-gray-700 font-medium">${(debt.product_cost || 0).toFixed(2)}</td>
                               <td className="text-right p-3 text-sm font-bold text-destructive">{debt.amount.toFixed(2)}</td>
                             </tr>
                           ))}
@@ -284,34 +284,34 @@ export function DashboardContent() {
                 </div>
 
                 {/* Calculation Box at Bottom */}
-                <div className="mt-4 pt-4 border-t-2 border-black">
+                <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-lg bg-warning/10 border-2 border-warning/30">
-                      <p className="text-xs font-medium text-gray-700 mb-2">Total Costs (Dollar)</p>
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-5 w-5 text-warning" />
-                        <Badge variant="warning" className="text-lg font-bold px-3 py-2">
-                          {totalUnpaidCosts.toFixed(2)}
-                        </Badge>
+                    <div className="p-4 rounded-lg border border-gray-200 bg-white">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-medium text-gray-600">Total Costs (Dollar)</p>
+                        <DollarSign className="h-4 w-4 text-warning" />
                       </div>
+                      <p className="text-xl font-bold text-gray-900">${totalUnpaidCosts.toFixed(2)}</p>
                     </div>
-                    <div className="p-4 rounded-lg bg-destructive/10 border-2 border-destructive/30">
-                      <p className="text-xs font-medium text-gray-700 mb-2">Total Amount</p>
-                      <Badge variant="destructive" className="text-lg font-bold px-3 py-2">
-                        {totalUnpaidAmount.toFixed(2)}
-                      </Badge>
+                    <div className="p-4 rounded-lg border border-gray-200 bg-white">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-medium text-gray-600">Total Amount</p>
+                        <span className="text-destructive text-lg">💰</span>
+                      </div>
+                      <p className="text-xl font-bold text-destructive">{totalUnpaidAmount.toFixed(2)}</p>
                     </div>
-                    <div className="p-4 rounded-lg bg-primary/10 border-2 border-primary/30">
-                      <p className="text-xs font-medium text-gray-700 mb-2">Total Items</p>
-                      <Badge variant="default" className="text-lg font-bold px-3 py-2">
-                        {unpaidDebts.length}
-                      </Badge>
+                    <div className="p-4 rounded-lg border border-gray-200 bg-white">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-medium text-gray-600">Total Items</p>
+                        <span className="text-primary text-lg">📊</span>
+                      </div>
+                      <p className="text-xl font-bold text-gray-900">{unpaidDebts.length}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4 mt-4 border-t border-black/20">
+                <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4 mt-4 border-t border-gray-200">
                   <Button
                     variant="outline"
                     onClick={() => setReminderDialogOpen(false)}
@@ -369,10 +369,9 @@ export function DashboardContent() {
       {/* Dollar to TL Rate Field */}
       <Card>
         <CardContent className="pt-4 sm:pt-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-warning/10 border-2 border-warning/30">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
             <Label htmlFor="dollarToTLRate" className="text-sm sm:text-base font-semibold text-black">
-              <span className="hidden sm:inline">سعر صرف الدولار مقابل الليرة التركية (Dollar to TL Rate):</span>
-              <span className="sm:hidden">Dollar to TL Rate:</span>
+              Dollar to TL Rate:
             </Label>
             <Input
               id="dollarToTLRate"
@@ -385,7 +384,7 @@ export function DashboardContent() {
               className="w-full sm:w-40"
             />
             <Button onClick={handleCashSave} variant="outline" className="w-full sm:w-auto">
-              حفظ سعر الصرف
+              Save Exchange Rate
             </Button>
           </div>
         </CardContent>
@@ -396,81 +395,68 @@ export function DashboardContent() {
         <CardHeader>
           <CardTitle>Totals</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-primary/10 border-2 border-primary/30">
-              <p className="text-xs sm:text-sm font-medium text-gray-700">Total Selling Price</p>
-              <Badge variant="default" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
-                {transformationTotals.totalSellingPrice.toFixed(2)}
-              </Badge>
-            </div>
-            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-warning/10 border-2 border-warning/30 shadow-md">
-              <p className="text-xs sm:text-sm font-medium text-black">Total Cost Price (Dollar)</p>
-              <div className="flex items-center justify-center gap-2 bg-white rounded-lg p-2 sm:p-3 border border-warning/50">
-                <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-warning" />
-                <Badge variant="warning" className="text-lg sm:text-xl px-3 sm:px-5 py-2 sm:py-3 font-bold">
-                  {transformationTotals.totalCostPriceInDollar.toFixed(2)}
-                </Badge>
-              </div>
-              {dollarToTLRate > 0 && (
-                <div className="mt-2 bg-warning/20 px-3 sm:px-4 py-2 rounded-lg border border-warning/50">
-                  <p className="text-xs sm:text-sm font-semibold text-black text-center">
-                    بالليرة التركية: <span className="text-sm sm:text-base">{totalCostPriceInTL.toFixed(2)} TL</span>
-                  </p>
+        <CardContent className="mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="relative p-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-shadow">
+              <div className="absolute top-4 right-4">
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <span className="text-primary text-sm">💰</span>
                 </div>
+              </div>
+              <p className="text-xs font-medium text-gray-600 mb-2">Total Selling Price</p>
+              <p className="text-2xl font-bold text-gray-900">{transformationTotals.totalSellingPrice.toFixed(2)}</p>
+            </div>
+            <div className="relative p-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-shadow">
+              <div className="absolute top-4 right-4">
+                <DollarSign className="h-6 w-6 text-warning" />
+              </div>
+              <p className="text-xs font-medium text-gray-600 mb-2">Total Cost Price (Dollar)</p>
+              <p className="text-2xl font-bold text-gray-900">${transformationTotals.totalCostPriceInDollar.toFixed(2)}</p>
+              {dollarToTLRate > 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {totalCostPriceInTL.toFixed(2)} TL
+                </p>
               )}
             </div>
-            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-destructive/10 border-2 border-destructive/30">
-              <p className="text-xs sm:text-sm font-medium text-gray-700">Total Expenses</p>
-              <Badge variant="destructive" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
-                {totalExpenses.toFixed(2)}
-              </Badge>
+            <div className="relative p-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-shadow">
+              <div className="absolute top-4 right-4">
+                <div className="h-8 w-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+                  <span className="text-destructive text-sm">📉</span>
+                </div>
+              </div>
+              <p className="text-xs font-medium text-gray-600 mb-2">Total Expenses</p>
+              <p className="text-2xl font-bold text-gray-900">{totalExpenses.toFixed(2)}</p>
             </div>
-            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-info/10 border-2 border-info/30">
-              <p className="text-xs sm:text-sm font-medium text-gray-700">Total Paraniz Sales Amount</p>
-              <Badge variant="info" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
-                {totalParanizSales.toFixed(2)}
-              </Badge>
+            <div className="relative p-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-shadow">
+              <div className="absolute top-4 right-4">
+                <div className="h-8 w-8 rounded-lg bg-info/10 flex items-center justify-center">
+                  <span className="text-info text-sm">📊</span>
+                </div>
+              </div>
+              <p className="text-xs font-medium text-gray-600 mb-2">Total Paraniz Sales</p>
+              <p className="text-2xl font-bold text-gray-900">{totalParanizSales.toFixed(2)}</p>
             </div>
           </div>
           
           {/* Net Total Calculation */}
-          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t-2 border-black">
-            <div className="space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-xl bg-primary/10 border-2 border-primary/30 shadow-lg">
-              <p className="text-sm sm:text-base font-semibold text-black mb-2">Net Total</p>
-              <p className="text-xs text-gray-600 mb-3 sm:mb-4">
-                (Total Selling Price + Total Paraniz Sales Amount)
-              </p>
-              <Badge variant="default" className="text-xl sm:text-2xl px-4 sm:px-6 py-3 sm:py-4 w-full justify-center font-bold">
-                {netTotal.toFixed(2)}
-              </Badge>
-            </div>
-            
-            {/* Total Cost Price in TL Display */}
-            <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t-2 border-black">
-              <div className="space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-xl bg-warning/10 border-2 border-warning/30 shadow-lg">
-                <p className="text-sm sm:text-base font-semibold text-black mb-2">Total Cost Price (Turkish TL)</p>
-                <p className="text-xs text-gray-600 mb-3 sm:mb-4">
-                  (Total Cost Price in Dollar × Dollar to TL Rate)
-                </p>
-                <Badge variant="warning" className="text-xl sm:text-2xl px-4 sm:px-6 py-3 sm:py-4 w-full justify-center font-bold">
-                  {totalCostPriceInTL.toFixed(2)} TL
-                </Badge>
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-5 rounded-lg border border-gray-200 bg-white">
+                <p className="text-sm font-medium text-gray-600 mb-1">Net Total</p>
+                <p className="text-xs text-gray-500 mb-3">(Selling Price + Paraniz Sales)</p>
+                <p className="text-2xl font-bold text-gray-900">{netTotal.toFixed(2)}</p>
               </div>
-            </div>
-            
-            {/* Net Total with Cash and Expenses */}
-            <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t-2 border-black">
-              <div className="space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-xl bg-accent/10 border-2 border-accent/30 shadow-lg">
-                <p className="text-sm sm:text-base font-semibold text-black mb-2">
-                  Net Total with Cash and Expenses
-                </p>
-                <p className="text-xs text-gray-600 mb-3 sm:mb-4">
-                  (Net Total + Cash In Box Yesterday - Total Expenses)
-                </p>
-                <Badge variant="default" className="text-xl sm:text-2xl px-4 sm:px-6 py-3 sm:py-4 w-full justify-center bg-accent text-accent-foreground font-bold">
-                  {netTotalWithCashAndExpenses.toFixed(2)}
-                </Badge>
+              
+              <div className="p-5 rounded-lg border border-gray-200 bg-white">
+                <p className="text-sm font-medium text-gray-600 mb-1">Total Cost Price (TL)</p>
+                <p className="text-xs text-gray-500 mb-3">(Cost × Dollar Rate)</p>
+                <p className="text-2xl font-bold text-gray-900">{totalCostPriceInTL.toFixed(2)} TL</p>
+              </div>
+              
+              <div className="p-5 rounded-lg border border-gray-200 bg-white">
+                <p className="text-sm font-medium text-gray-600 mb-1">Net with Cash & Expenses</p>
+                <p className="text-xs text-gray-500 mb-3">(Net + Yesterday - Expenses)</p>
+                <p className="text-2xl font-bold text-gray-900">{netTotalWithCashAndExpenses.toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -482,15 +468,15 @@ export function DashboardContent() {
         <CardHeader>
           <CardTitle>Cash In Box</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           {cashLoading ? (
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading cash data..." />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="cashInBoxYesterday">Cash In Box Yesterday</Label>
+                <Label htmlFor="cashInBoxYesterday" className="text-sm font-medium text-gray-700">Cash In Box Yesterday</Label>
                 <Input
                   id="cashInBoxYesterday"
                   type="number"
@@ -502,7 +488,7 @@ export function DashboardContent() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cashInBoxToday">Cash In Box Today</Label>
+                <Label htmlFor="cashInBoxToday" className="text-sm font-medium text-gray-700">Cash In Box Today</Label>
                 <Input
                   id="cashInBoxToday"
                   type="number"
@@ -514,7 +500,7 @@ export function DashboardContent() {
                 />
               </div>
               <div className="md:col-span-2">
-                <Button onClick={handleCashSave}>Save Cash Data</Button>
+                <Button onClick={handleCashSave} className="w-full sm:w-auto">Save Cash Data</Button>
               </div>
             </div>
           )}
@@ -524,25 +510,22 @@ export function DashboardContent() {
       {/* Cash Difference Result */}
       <Card>
         <CardContent className="pt-4 sm:pt-6">
-          <div className="space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-xl bg-gray-100 border-2 border-black shadow-lg">
-            <p className="text-sm sm:text-base font-semibold text-black mb-2">
-              الفرق النقدي (Cash Difference)
+          <div className="p-5 rounded-lg border border-gray-200 bg-white">
+            <p className="text-sm font-medium text-gray-600 mb-1">
+              Cash Difference
             </p>
-            <p className="text-xs text-gray-600 mb-3 sm:mb-4">
+            <p className="text-xs text-gray-500 mb-3">
               (Cash In Box Today - Net Total with Cash and Expenses)
             </p>
-            <Badge 
-              variant="default" 
-              className={`text-xl sm:text-2xl px-4 sm:px-6 py-3 sm:py-4 w-full justify-center font-bold ${
-                cashDifference === 0 
-                  ? "bg-gray-500 text-white" 
-                  : cashDifference > 0 
-                  ? "bg-success text-success-foreground" 
-                  : "bg-destructive text-destructive-foreground"
-              }`}
-            >
+            <p className={`text-2xl font-bold ${
+              cashDifference === 0 
+                ? "text-gray-600" 
+                : cashDifference > 0 
+                ? "text-success" 
+                : "text-destructive"
+            }`}>
               {formattedCashDifference}
-            </Badge>
+            </p>
           </div>
         </CardContent>
       </Card>
