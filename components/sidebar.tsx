@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Receipt, FileText, ArrowRightLeft, CreditCard, Package, Menu, X } from "lucide-react"
+import { LayoutDashboard, Receipt, FileText, ArrowRightLeft, CreditCard, Package, Menu, X, StickyNote } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function Sidebar() {
@@ -41,6 +41,11 @@ export function Sidebar() {
       href: "/products",
       label: "Products",
       icon: Package,
+    },
+    {
+      href: "/notes",
+      label: "Notes",
+      icon: StickyNote,
     },
   ]
 
