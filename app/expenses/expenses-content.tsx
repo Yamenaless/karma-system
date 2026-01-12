@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select } from "@/components/ui/select"
 import { addExpense, getExpensesByDate, getExpensesByDateRange, updateExpense, deleteExpense, getAllExpenses } from "@/app/actions/expenses"
 import { DailyExpense, ExpenseFormData } from "@/types/database"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2, Search } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
@@ -58,6 +58,7 @@ export function ExpensesContent() {
   
   const [dateFilter, setDateFilter] = useState<string>("custom")
   const [showAll, setShowAll] = useState(false)
+  const [nameFilter, setNameFilter] = useState<string>("")
 
   const [expenses, setExpenses] = useState<DailyExpense[]>([])
   const [loading, setLoading] = useState(true)
@@ -144,8 +145,14 @@ export function ExpensesContent() {
     }
   }
 
-  // Calculate total expenses
-  const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0)
+  // Filter expenses by name
+  const filteredExpenses = expenses.filter((expense) => {
+    if (!nameFilter.trim()) return true
+    return expense.name.toLowerCase().includes(nameFilter.toLowerCase())
+  })
+
+  // Calculate total expenses based on filtered expenses
+  const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (e.amount || 0), 0)
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
@@ -155,11 +162,17 @@ export function ExpensesContent() {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Daily Expenses</h1>
           <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {showAll ? (
-              <>Showing <span className="font-semibold">All Expenses</span></>
+              <>Showing <span className="font-semibold">All Expenses</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             ) : dateFilter === "custom" ? (
-              <>Date: <span className="font-semibold">{date}</span></>
+              <>Date: <span className="font-semibold">{date}</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             ) : (
-              <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span></>
+              <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             )}
           </p>
         </div>
@@ -208,6 +221,16 @@ export function ExpensesContent() {
               />
             </>
           )}
+          <div className="relative w-full sm:w-auto min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Filter by name..."
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+              className="w-full pl-10"
+            />
+          </div>
         </div>
       </div>
 
@@ -322,8 +345,10 @@ export function ExpensesContent() {
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading expenses..." />
             </div>
-          ) : expenses.length === 0 ? (
-            <p className="text-muted-foreground">No expenses for this date.</p>
+          ) : filteredExpenses.length === 0 ? (
+            <p className="text-muted-foreground">
+              {nameFilter.trim() ? `No expenses found matching "${nameFilter}".` : "No expenses for this date."}
+            </p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
               <table className="w-full border-collapse min-w-[400px]">
@@ -335,7 +360,7 @@ export function ExpensesContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {expenses.map((expense, index) => (
+                  {filteredExpenses.map((expense, index) => (
                     <tr key={expense.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                     }`}>

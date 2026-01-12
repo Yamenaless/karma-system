@@ -20,7 +20,7 @@ import {
 } from "@/app/actions/products-management"
 import { uploadProductImage, deleteProductImage } from "@/app/actions/image-upload"
 import { Product, ProductFormData, Category, Subcategory, CompanyBrand } from "@/types/database"
-import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X } from "lucide-react"
+import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X, Search } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 export function ProductsContent() {
@@ -286,13 +286,16 @@ export function ProductsContent() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Input
-            type="text"
-            placeholder="Search products..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-64"
-          />
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10"
+            />
+          </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button>

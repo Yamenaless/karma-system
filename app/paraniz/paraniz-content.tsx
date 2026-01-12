@@ -17,7 +17,7 @@ import {
   getAllParanizSales
 } from "@/app/actions/paraniz"
 import { DailyParanizSale, ParanizSaleFormData } from "@/types/database"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2, Search } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
@@ -65,6 +65,7 @@ export function ParanizContent() {
   
   const [dateFilter, setDateFilter] = useState<string>("custom")
   const [showAll, setShowAll] = useState(false)
+  const [nameFilter, setNameFilter] = useState<string>("")
 
   const [paranizSales, setParanizSales] = useState<DailyParanizSale[]>([])
   const [salesLoading, setSalesLoading] = useState(true)
@@ -167,9 +168,16 @@ export function ParanizContent() {
   }
 
   // Filter sales by category
-  const filteredSales = categoryFilter === "ALL" 
+  // Filter by category first
+  const categoryFilteredSales = categoryFilter === "ALL" 
     ? paranizSales 
     : paranizSales.filter(s => s.category === categoryFilter)
+
+  // Then filter by name
+  const filteredSales = categoryFilteredSales.filter((sale) => {
+    if (!nameFilter.trim()) return true
+    return sale.name.toLowerCase().includes(nameFilter.toLowerCase())
+  })
 
   // Calculate totals
   const totalParanizSales = filteredSales.reduce((sum, s) => sum + (s.amount || 0), 0)
@@ -183,11 +191,17 @@ export function ParanizContent() {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Daily Paraniz</h1>
           <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {showAll ? (
-              <>Showing <span className="font-semibold">All Paraniz Sales</span></>
+              <>Showing <span className="font-semibold">All Paraniz Sales</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             ) : dateFilter === "custom" ? (
-              <>Date: <span className="font-semibold">{date}</span></>
+              <>Date: <span className="font-semibold">{date}</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             ) : (
-              <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span></>
+              <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             )}
           </p>
         </div>
@@ -236,6 +250,16 @@ export function ParanizContent() {
               />
             </>
           )}
+          <div className="relative w-full sm:w-auto min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Filter by name..."
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+              className="w-full pl-10"
+            />
+          </div>
         </div>
       </div>
 
@@ -457,7 +481,12 @@ export function ParanizContent() {
               <Spinner size="lg" text="Loading paraniz sales..." />
             </div>
           ) : filteredSales.length === 0 ? (
-            <p className="text-muted-foreground">No paraniz sales for this date{categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.</p>
+            <p className="text-muted-foreground">
+              {nameFilter.trim() 
+                ? `No paraniz sales found matching "${nameFilter}"${categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.`
+                : `No paraniz sales for this date${categoryFilter !== "ALL" ? ` (${categoryFilter})` : ""}.`
+              }
+            </p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
               <table className="w-full border-collapse min-w-[700px]">

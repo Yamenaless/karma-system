@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select } from "@/components/ui/select"
 import { addDebt, getDebtsByDate, getDebtsByDateRange, updateDebt, deleteDebt, toggleDebtPaidStatus, getAllDebts } from "@/app/actions/debts"
 import { Debt, DebtFormData } from "@/types/database"
-import { Plus, Pencil, Trash2, CheckCircle2, XCircle } from "lucide-react"
+import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Search } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
@@ -58,6 +58,7 @@ export function DebtsContent() {
   
   const [dateFilter, setDateFilter] = useState<string>("custom")
   const [showAll, setShowAll] = useState(false)
+  const [nameFilter, setNameFilter] = useState<string>("")
 
   const [debts, setDebts] = useState<Debt[]>([])
   const [loading, setLoading] = useState(true)
@@ -161,11 +162,17 @@ export function DebtsContent() {
     }
   }
 
-  // Calculate totals
-  const totalDebts = debts.reduce((sum, d) => sum + (d.amount || 0), 0)
-  const unpaidDebts = debts.filter((d) => !d.is_paid)
+  // Filter debts by name
+  const filteredDebts = debts.filter((debt) => {
+    if (!nameFilter.trim()) return true
+    return debt.customer_name.toLowerCase().includes(nameFilter.toLowerCase())
+  })
+
+  // Calculate totals based on filtered debts
+  const totalDebts = filteredDebts.reduce((sum, d) => sum + (d.amount || 0), 0)
+  const unpaidDebts = filteredDebts.filter((d) => !d.is_paid)
   const totalUnpaid = unpaidDebts.reduce((sum, d) => sum + (d.amount || 0), 0)
-  const totalPaid = debts.filter((d) => d.is_paid).reduce((sum, d) => sum + (d.amount || 0), 0)
+  const totalPaid = filteredDebts.filter((d) => d.is_paid).reduce((sum, d) => sum + (d.amount || 0), 0)
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
@@ -175,11 +182,17 @@ export function DebtsContent() {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Debts</h1>
           <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {showAll ? (
-              <>Showing <span className="font-semibold">All Debts</span></>
+              <>Showing <span className="font-semibold">All Debts</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             ) : dateFilter === "custom" ? (
-              <>Date: <span className="font-semibold">{date}</span></>
+              <>Date: <span className="font-semibold">{date}</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             ) : (
-              <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span></>
+              <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             )}
           </p>
         </div>
@@ -228,6 +241,16 @@ export function DebtsContent() {
               />
             </>
           )}
+          <div className="relative w-full sm:w-auto min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Filter by customer name..."
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+              className="w-full pl-10"
+            />
+          </div>
         </div>
       </div>
 
@@ -433,8 +456,10 @@ export function DebtsContent() {
             <div className="flex items-center justify-center py-8">
               <Spinner size="lg" text="Loading debts..." />
             </div>
-          ) : debts.length === 0 ? (
-            <p className="text-muted-foreground">No debts for this date.</p>
+          ) : filteredDebts.length === 0 ? (
+            <p className="text-muted-foreground">
+              {nameFilter.trim() ? `No debts found matching "${nameFilter}".` : "No debts for this date."}
+            </p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
               <table className="w-full border-collapse min-w-[700px]">
@@ -449,7 +474,7 @@ export function DebtsContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {debts.map((debt, index) => (
+                  {filteredDebts.map((debt, index) => (
                     <tr key={debt.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                     }`}>
