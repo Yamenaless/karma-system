@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Select } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { addTransformation, getTransformationsByDate, getTransformationsByDateRange, updateTransformation, deleteTransformation, getAllTransformations } from "@/app/actions/products"
 import { DailyTransformation, TransformationFormData } from "@/types/database"
-import { Plus, Pencil, Trash2, DollarSign, Search } from "lucide-react"
+import { Plus, Pencil, Trash2, DollarSign, Search, Filter } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
@@ -59,6 +60,7 @@ export function TransformationsContent() {
   const [dateFilter, setDateFilter] = useState<string>("custom")
   const [showAll, setShowAll] = useState(false)
   const [nameFilter, setNameFilter] = useState<string>("")
+  const [netProfitFilter, setNetProfitFilter] = useState<string>("all") // "all", "net_profit", "not_net_profit"
 
   const [transformations, setTransformations] = useState<DailyTransformation[]>([])
   const [loading, setLoading] = useState(true)
@@ -72,6 +74,7 @@ export function TransformationsContent() {
     quantity: 0,
     dollarRate: 0,
     sellingPrice: 0,
+    isNetProfit: false,
   })
 
   const loadTransformations = async () => {
@@ -117,6 +120,7 @@ export function TransformationsContent() {
         quantity: 0,
         dollarRate: 0,
         sellingPrice: 0,
+        isNetProfit: false,
       })
       await loadTransformations()
     } else {
@@ -131,6 +135,7 @@ export function TransformationsContent() {
       quantity: transformation.quantity,
       dollarRate: transformation.dollarRate,
       sellingPrice: transformation.sellingPrice,
+      isNetProfit: transformation.isNetProfit || false,
     })
     setEditDialogOpen(true)
   }
@@ -141,6 +146,21 @@ export function TransformationsContent() {
 
     const result = await updateTransformation(editingTransformation.id, formData)
     if (result.success) {
+      // Update the local state instead of reloading
+      setTransformations((prev) =>
+        prev.map((t) =>
+          t.id === editingTransformation.id
+            ? {
+                ...t,
+                name: formData.name,
+                quantity: formData.quantity,
+                dollarRate: formData.dollarRate,
+                sellingPrice: formData.sellingPrice,
+                isNetProfit: formData.isNetProfit,
+              }
+            : t
+        )
+      )
       setEditDialogOpen(false)
       setEditingTransformation(null)
       setFormData({
@@ -148,8 +168,8 @@ export function TransformationsContent() {
         quantity: 0,
         dollarRate: 0,
         sellingPrice: 0,
+        isNetProfit: false,
       })
-      await loadTransformations()
     } else {
       alert(`Error: ${result.error}`)
     }
@@ -160,16 +180,29 @@ export function TransformationsContent() {
 
     const result = await deleteTransformation(id)
     if (result.success) {
-      await loadTransformations()
+      // Update local state instead of reloading
+      setTransformations((prev) => prev.filter((t) => t.id !== id))
     } else {
       alert(`Error: ${result.error}`)
     }
   }
 
-  // Filter transformations by name
+  // Filter transformations by name and net profit status
   const filteredTransformations = transformations.filter((transformation) => {
-    if (!nameFilter.trim()) return true
-    return transformation.name.toLowerCase().includes(nameFilter.toLowerCase())
+    // Name filter
+    if (nameFilter.trim() && !transformation.name.toLowerCase().includes(nameFilter.toLowerCase())) {
+      return false
+    }
+    
+    // Net profit filter
+    if (netProfitFilter === "net_profit" && !transformation.isNetProfit) {
+      return false
+    }
+    if (netProfitFilter === "not_net_profit" && transformation.isNetProfit) {
+      return false
+    }
+    
+    return true
   })
 
   // Calculate totals based on filtered transformations
@@ -189,14 +222,23 @@ export function TransformationsContent() {
             {showAll ? (
               <>Showing <span className="font-semibold">All Transformations</span>
                 {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+                {netProfitFilter !== "all" && (
+                  <span className="ml-2">• {netProfitFilter === "net_profit" ? "Net Profit Only" : "Not Net Profit Only"}</span>
+                )}
               </>
             ) : dateFilter === "custom" ? (
               <>Date: <span className="font-semibold">{date}</span>
                 {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+                {netProfitFilter !== "all" && (
+                  <span className="ml-2">• {netProfitFilter === "net_profit" ? "Net Profit Only" : "Not Net Profit Only"}</span>
+                )}
               </>
             ) : (
               <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span>
                 {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+                {netProfitFilter !== "all" && (
+                  <span className="ml-2">• {netProfitFilter === "net_profit" ? "Net Profit Only" : "Not Net Profit Only"}</span>
+                )}
               </>
             )}
           </p>
@@ -255,6 +297,18 @@ export function TransformationsContent() {
               onChange={(e) => setNameFilter(e.target.value)}
               className="w-full pl-10"
             />
+          </div>
+          <div className="relative w-full sm:w-auto min-w-[180px]">
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Select
+              value={netProfitFilter}
+              onChange={(e) => setNetProfitFilter(e.target.value)}
+              className="w-full pl-10"
+            >
+              <option value="all">All Transformations</option>
+              <option value="net_profit">Net Profit Only</option>
+              <option value="not_net_profit">Not Net Profit</option>
+            </Select>
           </div>
         </div>
       </div>
@@ -323,6 +377,18 @@ export function TransformationsContent() {
                   required
                 />
               </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="isNetProfit"
+                checked={formData.isNetProfit}
+                onChange={(e) =>
+                  setFormData({ ...formData, isNetProfit: e.target.checked })
+                }
+              />
+              <Label htmlFor="isNetProfit" className="text-sm font-normal cursor-pointer">
+                This is a net profit transformation
+              </Label>
             </div>
             <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
@@ -398,6 +464,18 @@ export function TransformationsContent() {
                 />
               </div>
             </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="edit-isNetProfit"
+                checked={formData.isNetProfit}
+                onChange={(e) =>
+                  setFormData({ ...formData, isNetProfit: e.target.checked })
+                }
+              />
+              <Label htmlFor="edit-isNetProfit" className="text-sm font-normal cursor-pointer">
+                This is a net profit transformation
+              </Label>
+            </div>
             <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
                 type="button"
@@ -436,7 +514,9 @@ export function TransformationsContent() {
             </div>
           ) : filteredTransformations.length === 0 ? (
             <p className="text-muted-foreground">
-              {nameFilter.trim() ? `No transformations found matching "${nameFilter}".` : "No transformations for this date."}
+              {nameFilter.trim() || netProfitFilter !== "all"
+                ? "No transformations found matching your filters."
+                : "No transformations for this date."}
             </p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
@@ -447,6 +527,7 @@ export function TransformationsContent() {
                     <th className="text-right p-3 font-semibold text-gray-700 text-sm">Quantity</th>
                     <th className="text-right p-3 font-semibold text-gray-700 text-sm">Dollar Rate</th>
                     <th className="text-right p-3 font-semibold text-gray-700 text-sm">Selling Price</th>
+                    <th className="text-center p-3 font-semibold text-gray-700 text-sm">Net Profit</th>
                     <th className="text-center p-3 font-semibold text-gray-700 text-sm">Actions</th>
                   </tr>
                 </thead>
@@ -459,6 +540,13 @@ export function TransformationsContent() {
                       <td className="text-right p-3 text-gray-700 text-sm">{transformation.quantity.toFixed(2)}</td>
                       <td className="text-right p-3 text-gray-700 text-sm">${transformation.dollarRate.toFixed(2)}</td>
                       <td className="text-right p-3 font-semibold text-gray-900 text-sm">{transformation.sellingPrice.toFixed(2)}</td>
+                      <td className="text-center p-3">
+                        {transformation.isNetProfit ? (
+                          <Badge variant="success" className="text-xs">Net Profit</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="text-xs">Regular</Badge>
+                        )}
+                      </td>
                       <td className="text-center p-3">
                         <div className="flex justify-center gap-1 sm:gap-2">
                           <Button

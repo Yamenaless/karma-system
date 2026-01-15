@@ -16,6 +16,7 @@ export async function addTransformation(date: string, data: TransformationFormDa
       quantity: data.quantity,
       dollar_rate: data.dollarRate,
       selling_price: data.sellingPrice,
+      is_net_profit: data.isNetProfit || false,
     })
 
   if (error) {
@@ -65,6 +66,7 @@ export async function getTransformationsByDate(date: string) {
     quantity: parseFloat(item.quantity?.toString() || "0"),
     dollarRate: parseFloat(item.dollar_rate?.toString() || "0"),
     sellingPrice: parseFloat(item.selling_price?.toString() || "0"),
+    isNetProfit: item.is_net_profit || false,
     created_at: item.created_at,
   }))
 
@@ -82,6 +84,7 @@ export async function updateTransformation(id: string, data: TransformationFormD
       quantity: data.quantity,
       dollar_rate: data.dollarRate,
       selling_price: data.sellingPrice,
+      is_net_profit: data.isNetProfit || false,
     })
     .eq("id", id)
 
@@ -157,6 +160,7 @@ export async function getTransformationsByDateRange(startDate: string, endDate: 
     quantity: parseFloat(item.quantity?.toString() || "0"),
     dollarRate: parseFloat(item.dollar_rate?.toString() || "0"),
     sellingPrice: parseFloat(item.selling_price?.toString() || "0"),
+    isNetProfit: item.is_net_profit || false,
     created_at: item.created_at,
   }))
 
@@ -241,6 +245,7 @@ export async function getAllTransformations() {
     quantity: parseFloat(item.quantity?.toString() || "0"),
     dollarRate: parseFloat(item.dollar_rate?.toString() || "0"),
     sellingPrice: parseFloat(item.selling_price?.toString() || "0"),
+    isNetProfit: item.is_net_profit || false,
     created_at: item.created_at,
   }))
 

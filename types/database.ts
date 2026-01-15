@@ -5,6 +5,7 @@ export interface DailyTransformation {
   quantity: number
   dollarRate: number
   sellingPrice: number
+  isNetProfit: boolean
   created_at: string
 }
 
@@ -22,6 +23,7 @@ export interface TransformationFormData {
   quantity: number
   dollarRate: number
   sellingPrice: number
+  isNetProfit: boolean
 }
 
 export interface DailyExpense {
