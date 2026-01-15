@@ -520,9 +520,10 @@ export function TransformationsContent() {
             </p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
-              <table className="w-full border-collapse min-w-[600px]">
+              <table className="w-full border-collapse min-w-[800px]">
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Date</th>
                     <th className="text-left p-3 font-semibold text-gray-700 text-sm">Name</th>
                     <th className="text-right p-3 font-semibold text-gray-700 text-sm">Quantity</th>
                     <th className="text-right p-3 font-semibold text-gray-700 text-sm">Dollar Rate</th>
@@ -532,10 +533,20 @@ export function TransformationsContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTransformations.map((transformation, index) => (
+                  {filteredTransformations.map((transformation, index) => {
+                    const formatDate = (dateString: string) => {
+                      const date = new Date(dateString)
+                      return date.toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
+                    }
+                    return (
                     <tr key={transformation.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                     }`}>
+                      <td className="p-3 text-gray-700 text-sm">{formatDate(transformation.date)}</td>
                       <td className="p-3 font-medium text-gray-900 text-sm">{transformation.name}</td>
                       <td className="text-right p-3 text-gray-700 text-sm">{transformation.quantity.toFixed(2)}</td>
                       <td className="text-right p-3 text-gray-700 text-sm">${transformation.dollarRate.toFixed(2)}</td>
@@ -570,7 +581,8 @@ export function TransformationsContent() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
