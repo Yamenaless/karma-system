@@ -56,6 +56,16 @@ export function ExpensesContent() {
     return today.toISOString().split("T")[0]
   })
   
+  const [fromDate, setFromDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split("T")[0]
+  })
+  
+  const [toDate, setToDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split("T")[0]
+  })
+  
   const [dateFilter, setDateFilter] = useState<string>("custom")
   const [showAll, setShowAll] = useState(false)
   const [nameFilter, setNameFilter] = useState<string>("")
@@ -78,6 +88,8 @@ export function ExpensesContent() {
       result = await getAllExpenses()
     } else if (dateFilter === "custom") {
       result = await getExpensesByDate(date)
+    } else if (dateFilter === "dateRange") {
+      result = await getExpensesByDateRange(fromDate, toDate)
     } else {
       const { startDate, endDate } = getDateRangeByFilter(dateFilter)
       result = await getExpensesByDateRange(startDate, endDate)
@@ -90,7 +102,7 @@ export function ExpensesContent() {
 
   useEffect(() => {
     loadExpenses()
-  }, [date, dateFilter, showAll])
+  }, [date, fromDate, toDate, dateFilter, showAll])
 
   const handleAddExpense = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -169,6 +181,10 @@ export function ExpensesContent() {
               <>Date: <span className="font-semibold">{date}</span>
                 {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
               </>
+            ) : dateFilter === "dateRange" ? (
+              <>Date Range: <span className="font-semibold">{fromDate} to {toDate}</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             ) : (
               <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span>
                 {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
@@ -196,7 +212,7 @@ export function ExpensesContent() {
                 onChange={(e) => {
                   const filter = e.target.value
                   setDateFilter(filter)
-                  if (filter !== "custom") {
+                  if (filter !== "custom" && filter !== "dateRange") {
                     const { endDate } = getDateRangeByFilter(filter)
                     setDate(endDate)
                   }
@@ -204,21 +220,65 @@ export function ExpensesContent() {
                 className="w-full sm:w-auto"
               >
                 <option value="custom">Custom Date</option>
+                <option value="dateRange">Date Range</option>
                 <option value="yesterday">Yesterday</option>
                 <option value="1day">1 Day</option>
                 <option value="1week">1 Week</option>
                 <option value="1month">1 Month</option>
                 <option value="1year">1 Year</option>
               </Select>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => {
-                  setDate(e.target.value)
-                  setDateFilter("custom")
-                }}
-                className="w-full sm:w-auto"
-              />
+              {dateFilter === "custom" ? (
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <Label htmlFor="date-input" className="text-xs text-gray-600">Date</Label>
+                  <Input
+                    id="date-input"
+                    type="date"
+                    value={date}
+                    onChange={(e) => {
+                      setDate(e.target.value)
+                      setDateFilter("custom")
+                    }}
+                    className="w-full sm:w-auto"
+                  />
+                </div>
+              ) : dateFilter === "dateRange" ? (
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <Label className="text-xs text-gray-600">Date Range</Label>
+                  <div className="flex gap-2">
+                    <div className="flex flex-col gap-1 flex-1">
+                      <Label htmlFor="from-date" className="text-xs text-gray-500">From</Label>
+                      <Input
+                        id="from-date"
+                        type="date"
+                        value={fromDate}
+                        onChange={(e) => {
+                          setFromDate(e.target.value)
+                          if (e.target.value > toDate) {
+                            setToDate(e.target.value)
+                          }
+                        }}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 flex-1">
+                      <Label htmlFor="to-date" className="text-xs text-gray-500">To</Label>
+                      <Input
+                        id="to-date"
+                        type="date"
+                        value={toDate}
+                        onChange={(e) => {
+                          setToDate(e.target.value)
+                          if (e.target.value < fromDate) {
+                            setFromDate(e.target.value)
+                          }
+                        }}
+                        min={fromDate}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </>
           )}
           <div className="relative w-full sm:w-auto min-w-[200px]">
@@ -351,19 +411,30 @@ export function ExpensesContent() {
             </p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
-              <table className="w-full border-collapse min-w-[400px]">
+              <table className="w-full border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Date</th>
                     <th className="text-left p-3 font-semibold text-gray-700 text-sm">Name</th>
                     <th className="text-right p-3 font-semibold text-gray-700 text-sm">Amount</th>
                     <th className="text-center p-3 font-semibold text-gray-700 text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredExpenses.map((expense, index) => (
+                  {filteredExpenses.map((expense, index) => {
+                    const formatDate = (dateString: string) => {
+                      const date = new Date(dateString)
+                      return date.toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
+                    }
+                    return (
                     <tr key={expense.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                     }`}>
+                      <td className="p-3 text-gray-700 text-sm">{formatDate(expense.date)}</td>
                       <td className="p-3 font-medium text-gray-900 text-sm">{expense.name}</td>
                       <td className="text-right p-3 font-semibold text-gray-900 text-sm">{expense.amount.toFixed(2)}</td>
                       <td className="text-center p-3">
@@ -389,7 +460,8 @@ export function ExpensesContent() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

@@ -62,6 +62,16 @@ export function DashboardContent() {
     return today.toISOString().split("T")[0]
   })
   
+  const [fromDate, setFromDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split("T")[0]
+  })
+  
+  const [toDate, setToDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split("T")[0]
+  })
+  
   const [dateFilter, setDateFilter] = useState<string>("custom")
 
   const [cashInBoxYesterday, setCashInBoxYesterday] = useState(0)
@@ -80,14 +90,17 @@ export function DashboardContent() {
   const loadCash = async () => {
     setCashLoading(true)
     
+    // Determine which date to use for cash loading
+    const cashDate = dateFilter === "dateRange" ? toDate : date
+    
     // Load previous day's cashInBoxToday
-    const prevCashResult = await getPreviousDayCash(date)
+    const prevCashResult = await getPreviousDayCash(cashDate)
     if (prevCashResult.success) {
       setCashInBoxYesterday(prevCashResult.data || 0)
     }
 
     // Load today's cash data
-    const cashResult = await getCashByDate(date)
+    const cashResult = await getCashByDate(cashDate)
     if (cashResult.success && cashResult.data) {
       setCashInBoxToday(cashResult.data.cashInBoxToday || 0)
       setDollarToTLRate(cashResult.data.dollarToTLRate || 0)
@@ -104,6 +117,8 @@ export function DashboardContent() {
     let result
     if (dateFilter === "custom") {
       result = await getTotalExpensesByDate(date)
+    } else if (dateFilter === "dateRange") {
+      result = await getTotalExpensesByDateRange(fromDate, toDate)
     } else {
       const { startDate, endDate } = getDateRangeByFilter(dateFilter)
       result = await getTotalExpensesByDateRange(startDate, endDate)
@@ -117,6 +132,8 @@ export function DashboardContent() {
     let result
     if (dateFilter === "custom") {
       result = await getTransformationTotalsByDate(date)
+    } else if (dateFilter === "dateRange") {
+      result = await getTransformationTotalsByDateRange(fromDate, toDate)
     } else {
       const { startDate, endDate } = getDateRangeByFilter(dateFilter)
       result = await getTransformationTotalsByDateRange(startDate, endDate)
@@ -130,6 +147,8 @@ export function DashboardContent() {
     let result
     if (dateFilter === "custom") {
       result = await getParanizSalesTotalByDate(date)
+    } else if (dateFilter === "dateRange") {
+      result = await getParanizSalesTotalByDateRange(fromDate, toDate)
     } else {
       const { startDate, endDate } = getDateRangeByFilter(dateFilter)
       result = await getParanizSalesTotalByDateRange(startDate, endDate)
@@ -156,11 +175,12 @@ export function DashboardContent() {
     loadTransformationTotals()
     loadParanizSalesTotal()
     loadUnpaidDebts()
-  }, [date, dateFilter])
+  }, [date, fromDate, toDate, dateFilter])
 
 
   const handleCashSave = async () => {
-    const result = await upsertCash(date, cashInBoxYesterday, cashInBoxToday, dollarToTLRate)
+    const cashDate = dateFilter === "dateRange" ? toDate : date
+    const result = await upsertCash(cashDate, cashInBoxYesterday, cashInBoxToday, dollarToTLRate)
     if (result.success) {
       alert("Cash data saved successfully!")
       await loadTransformationTotals()
@@ -200,6 +220,8 @@ export function DashboardContent() {
           <p className="text-gray-500 mt-1 text-sm sm:text-base">
             {dateFilter === "custom" ? (
               <>Date: <span className="font-semibold text-black">{date}</span></>
+            ) : dateFilter === "dateRange" ? (
+              <>Date Range: <span className="font-semibold text-black">{fromDate} to {toDate}</span></>
             ) : (
               <>Period: <span className="font-semibold text-black">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span></>
             )}
@@ -336,32 +358,76 @@ export function DashboardContent() {
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Select
               value={dateFilter}
-            onChange={(e) => {
-              const filter = e.target.value
-              setDateFilter(filter)
-              if (filter !== "custom") {
-                const { endDate } = getDateRangeByFilter(filter)
-                setDate(endDate)
-              }
-            }}
-              className="w-full sm:w-auto"
-            >
-            <option value="custom">Custom Date</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="1day">1 Day</option>
-            <option value="1week">1 Week</option>
-            <option value="1month">1 Month</option>
-            <option value="1year">1 Year</option>
-            </Select>
-            <Input
-              type="date"
-              value={date}
               onChange={(e) => {
-                setDate(e.target.value)
-                setDateFilter("custom")
+                const filter = e.target.value
+                setDateFilter(filter)
+                if (filter !== "custom" && filter !== "dateRange") {
+                  const { endDate } = getDateRangeByFilter(filter)
+                  setDate(endDate)
+                }
               }}
               className="w-full sm:w-auto"
-            />
+            >
+              <option value="custom">Custom Date</option>
+              <option value="dateRange">Date Range</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="1day">1 Day</option>
+              <option value="1week">1 Week</option>
+              <option value="1month">1 Month</option>
+              <option value="1year">1 Year</option>
+            </Select>
+            {dateFilter === "custom" ? (
+              <div className="flex flex-col gap-1 w-full sm:w-auto">
+                <Label htmlFor="date-input" className="text-xs text-gray-600">Date</Label>
+                <Input
+                  id="date-input"
+                  type="date"
+                  value={date}
+                  onChange={(e) => {
+                    setDate(e.target.value)
+                    setDateFilter("custom")
+                  }}
+                  className="w-full sm:w-auto"
+                />
+              </div>
+            ) : dateFilter === "dateRange" ? (
+              <div className="flex flex-col gap-1 w-full sm:w-auto">
+                <Label className="text-xs text-gray-600">Date Range</Label>
+                <div className="flex gap-2">
+                  <div className="flex flex-col gap-1 flex-1">
+                    <Label htmlFor="from-date" className="text-xs text-gray-500">From</Label>
+                    <Input
+                      id="from-date"
+                      type="date"
+                      value={fromDate}
+                      onChange={(e) => {
+                        setFromDate(e.target.value)
+                        if (e.target.value > toDate) {
+                          setToDate(e.target.value)
+                        }
+                      }}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 flex-1">
+                    <Label htmlFor="to-date" className="text-xs text-gray-500">To</Label>
+                    <Input
+                      id="to-date"
+                      type="date"
+                      value={toDate}
+                      onChange={(e) => {
+                        setToDate(e.target.value)
+                        if (e.target.value < fromDate) {
+                          setFromDate(e.target.value)
+                        }
+                      }}
+                      min={fromDate}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

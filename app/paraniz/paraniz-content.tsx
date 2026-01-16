@@ -63,6 +63,16 @@ export function ParanizContent() {
     return today.toISOString().split("T")[0]
   })
   
+  const [fromDate, setFromDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split("T")[0]
+  })
+  
+  const [toDate, setToDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split("T")[0]
+  })
+  
   const [dateFilter, setDateFilter] = useState<string>("custom")
   const [showAll, setShowAll] = useState(false)
   const [nameFilter, setNameFilter] = useState<string>("")
@@ -90,6 +100,8 @@ export function ParanizContent() {
       result = await getAllParanizSales()
     } else if (dateFilter === "custom") {
       result = await getParanizSalesByDate(date)
+    } else if (dateFilter === "dateRange") {
+      result = await getParanizSalesByDateRange(fromDate, toDate)
     } else {
       const { startDate, endDate } = getDateRangeByFilter(dateFilter)
       result = await getParanizSalesByDateRange(startDate, endDate)
@@ -102,7 +114,7 @@ export function ParanizContent() {
 
   useEffect(() => {
     loadParanizSales()
-  }, [date, dateFilter, showAll])
+  }, [date, fromDate, toDate, dateFilter, showAll])
 
   // Sales handlers
   const handleAddSale = async (e: React.FormEvent) => {
@@ -198,6 +210,10 @@ export function ParanizContent() {
               <>Date: <span className="font-semibold">{date}</span>
                 {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
               </>
+            ) : dateFilter === "dateRange" ? (
+              <>Date Range: <span className="font-semibold">{fromDate} to {toDate}</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+              </>
             ) : (
               <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span>
                 {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
@@ -225,7 +241,7 @@ export function ParanizContent() {
                 onChange={(e) => {
                   const filter = e.target.value
                   setDateFilter(filter)
-                  if (filter !== "custom") {
+                  if (filter !== "custom" && filter !== "dateRange") {
                     const { endDate } = getDateRangeByFilter(filter)
                     setDate(endDate)
                   }
@@ -233,21 +249,65 @@ export function ParanizContent() {
                 className="w-full sm:w-auto"
               >
                 <option value="custom">Custom Date</option>
+                <option value="dateRange">Date Range</option>
                 <option value="yesterday">Yesterday</option>
                 <option value="1day">1 Day</option>
                 <option value="1week">1 Week</option>
                 <option value="1month">1 Month</option>
                 <option value="1year">1 Year</option>
               </Select>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => {
-                  setDate(e.target.value)
-                  setDateFilter("custom")
-                }}
-                className="w-full sm:w-auto"
-              />
+              {dateFilter === "custom" ? (
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <Label htmlFor="date-input" className="text-xs text-gray-600">Date</Label>
+                  <Input
+                    id="date-input"
+                    type="date"
+                    value={date}
+                    onChange={(e) => {
+                      setDate(e.target.value)
+                      setDateFilter("custom")
+                    }}
+                    className="w-full sm:w-auto"
+                  />
+                </div>
+              ) : dateFilter === "dateRange" ? (
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <Label className="text-xs text-gray-600">Date Range</Label>
+                  <div className="flex gap-2">
+                    <div className="flex flex-col gap-1 flex-1">
+                      <Label htmlFor="from-date" className="text-xs text-gray-500">From</Label>
+                      <Input
+                        id="from-date"
+                        type="date"
+                        value={fromDate}
+                        onChange={(e) => {
+                          setFromDate(e.target.value)
+                          if (e.target.value > toDate) {
+                            setToDate(e.target.value)
+                          }
+                        }}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 flex-1">
+                      <Label htmlFor="to-date" className="text-xs text-gray-500">To</Label>
+                      <Input
+                        id="to-date"
+                        type="date"
+                        value={toDate}
+                        onChange={(e) => {
+                          setToDate(e.target.value)
+                          if (e.target.value < fromDate) {
+                            setFromDate(e.target.value)
+                          }
+                        }}
+                        min={fromDate}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </>
           )}
           <div className="relative w-full sm:w-auto min-w-[200px]">
@@ -489,9 +549,10 @@ export function ParanizContent() {
             </p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
-              <table className="w-full border-collapse min-w-[700px]">
+              <table className="w-full border-collapse min-w-[800px]">
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Date</th>
                     <th className="text-left p-3 font-semibold text-gray-700 text-sm">Name</th>
                     <th className="text-left p-3 font-semibold text-gray-700 text-sm">Category</th>
                     <th className="text-left p-3 font-semibold text-gray-700 text-sm">Subscription Number</th>
@@ -501,10 +562,20 @@ export function ParanizContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredSales.map((sale, index) => (
+                  {filteredSales.map((sale, index) => {
+                    const formatDate = (dateString: string) => {
+                      const date = new Date(dateString)
+                      return date.toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
+                    }
+                    return (
                     <tr key={sale.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                     }`}>
+                      <td className="p-3 text-gray-700 text-sm">{formatDate(sale.date)}</td>
                       <td className="p-3 font-medium text-gray-900 text-sm">{sale.name}</td>
                       <td className="p-3">
                         <Badge variant={sale.category === "FATURA" ? "default" : "secondary"} className="font-medium text-xs">
@@ -537,7 +608,8 @@ export function ParanizContent() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

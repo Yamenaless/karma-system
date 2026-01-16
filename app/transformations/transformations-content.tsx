@@ -57,6 +57,16 @@ export function TransformationsContent() {
     return today.toISOString().split("T")[0]
   })
   
+  const [fromDate, setFromDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split("T")[0]
+  })
+  
+  const [toDate, setToDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split("T")[0]
+  })
+  
   const [dateFilter, setDateFilter] = useState<string>("custom")
   const [showAll, setShowAll] = useState(false)
   const [nameFilter, setNameFilter] = useState<string>("")
@@ -86,6 +96,8 @@ export function TransformationsContent() {
         result = await getAllTransformations()
       } else if (dateFilter === "custom") {
         result = await getTransformationsByDate(date)
+      } else if (dateFilter === "dateRange") {
+        result = await getTransformationsByDateRange(fromDate, toDate)
       } else {
         const { startDate, endDate } = getDateRangeByFilter(dateFilter)
         result = await getTransformationsByDateRange(startDate, endDate)
@@ -108,7 +120,7 @@ export function TransformationsContent() {
 
   useEffect(() => {
     loadTransformations()
-  }, [date, dateFilter, showAll])
+  }, [date, fromDate, toDate, dateFilter, showAll])
 
   const handleAddTransformation = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -233,6 +245,13 @@ export function TransformationsContent() {
                   <span className="ml-2">• {netProfitFilter === "net_profit" ? "Net Profit Only" : "Not Net Profit Only"}</span>
                 )}
               </>
+            ) : dateFilter === "dateRange" ? (
+              <>Date Range: <span className="font-semibold">{fromDate} to {toDate}</span>
+                {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
+                {netProfitFilter !== "all" && (
+                  <span className="ml-2">• {netProfitFilter === "net_profit" ? "Net Profit Only" : "Not Net Profit Only"}</span>
+                )}
+              </>
             ) : (
               <>Period: <span className="font-semibold">{getDateRangeByFilter(dateFilter).startDate} to {getDateRangeByFilter(dateFilter).endDate}</span>
                 {nameFilter.trim() && <span className="ml-2">• Filtered by: <span className="font-semibold">"{nameFilter}"</span></span>}
@@ -263,7 +282,7 @@ export function TransformationsContent() {
                 onChange={(e) => {
                   const filter = e.target.value
                   setDateFilter(filter)
-                  if (filter !== "custom") {
+                  if (filter !== "custom" && filter !== "dateRange") {
                     const { endDate } = getDateRangeByFilter(filter)
                     setDate(endDate)
                   }
@@ -271,21 +290,65 @@ export function TransformationsContent() {
                 className="w-full sm:w-auto"
               >
                 <option value="custom">Custom Date</option>
+                <option value="dateRange">Date Range</option>
                 <option value="yesterday">Yesterday</option>
                 <option value="1day">1 Day</option>
                 <option value="1week">1 Week</option>
                 <option value="1month">1 Month</option>
                 <option value="1year">1 Year</option>
               </Select>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => {
-                  setDate(e.target.value)
-                  setDateFilter("custom")
-                }}
-                className="w-full sm:w-auto"
-              />
+              {dateFilter === "custom" ? (
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <Label htmlFor="date-input" className="text-xs text-gray-600">Date</Label>
+                  <Input
+                    id="date-input"
+                    type="date"
+                    value={date}
+                    onChange={(e) => {
+                      setDate(e.target.value)
+                      setDateFilter("custom")
+                    }}
+                    className="w-full sm:w-auto"
+                  />
+                </div>
+              ) : dateFilter === "dateRange" ? (
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <Label className="text-xs text-gray-600">Date Range</Label>
+                  <div className="flex gap-2">
+                    <div className="flex flex-col gap-1 flex-1">
+                      <Label htmlFor="from-date" className="text-xs text-gray-500">From</Label>
+                      <Input
+                        id="from-date"
+                        type="date"
+                        value={fromDate}
+                        onChange={(e) => {
+                          setFromDate(e.target.value)
+                          if (e.target.value > toDate) {
+                            setToDate(e.target.value)
+                          }
+                        }}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 flex-1">
+                      <Label htmlFor="to-date" className="text-xs text-gray-500">To</Label>
+                      <Input
+                        id="to-date"
+                        type="date"
+                        value={toDate}
+                        onChange={(e) => {
+                          setToDate(e.target.value)
+                          if (e.target.value < fromDate) {
+                            setFromDate(e.target.value)
+                          }
+                        }}
+                        min={fromDate}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </>
           )}
           <div className="relative w-full sm:w-auto min-w-[200px]">

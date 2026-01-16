@@ -462,9 +462,10 @@ export function DebtsContent() {
             </p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
-              <table className="w-full border-collapse min-w-[700px]">
+              <table className="w-full border-collapse min-w-[800px]">
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left p-3 font-semibold text-gray-700 text-sm">Date</th>
                     <th className="text-left p-3 font-semibold text-gray-700 text-sm">Customer</th>
                     <th className="text-left p-3 font-semibold text-gray-700 text-sm">Product</th>
                     <th className="text-right p-3 font-semibold text-gray-700 text-sm">Cost</th>
@@ -474,10 +475,20 @@ export function DebtsContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredDebts.map((debt, index) => (
+                  {filteredDebts.map((debt, index) => {
+                    const formatDate = (dateString: string) => {
+                      const date = new Date(dateString)
+                      return date.toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
+                    }
+                    return (
                     <tr key={debt.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                     }`}>
+                      <td className="p-3 text-gray-700 text-sm">{formatDate(debt.date)}</td>
                       <td className="p-3 font-medium text-gray-900 text-sm">{debt.customer_name}</td>
                       <td className="p-3 text-gray-700 text-sm">{debt.product_name}</td>
                       <td className="text-right p-3 text-gray-700 text-sm">${(debt.product_cost || 0).toFixed(2)}</td>
@@ -530,7 +541,8 @@ export function DebtsContent() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
