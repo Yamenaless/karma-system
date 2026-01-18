@@ -11,7 +11,7 @@ import { Select } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { addTransformation, getTransformationsByDate, getTransformationsByDateRange, updateTransformation, deleteTransformation, getAllTransformations } from "@/app/actions/products"
 import { DailyTransformation, TransformationFormData } from "@/types/database"
-import { Plus, Pencil, Trash2, DollarSign, Search, Filter } from "lucide-react"
+import { Plus, Pencil, Trash2, Search, Filter } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 
 const getDateRangeByFilter = (filter: string): { startDate: string; endDate: string } => {
@@ -82,7 +82,7 @@ export function TransformationsContent() {
   const [formData, setFormData] = useState<TransformationFormData>({
     name: "",
     quantity: 0,
-    dollarRate: 0,
+    productCost: 0,
     sellingPrice: 0,
     isNetProfit: false,
   })
@@ -130,7 +130,7 @@ export function TransformationsContent() {
       setFormData({
         name: "",
         quantity: 0,
-        dollarRate: 0,
+        productCost: 0,
         sellingPrice: 0,
         isNetProfit: false,
       })
@@ -145,7 +145,7 @@ export function TransformationsContent() {
     setFormData({
       name: transformation.name,
       quantity: transformation.quantity,
-      dollarRate: transformation.dollarRate,
+      productCost: transformation.productCost,
       sellingPrice: transformation.sellingPrice,
       isNetProfit: transformation.isNetProfit || false,
     })
@@ -166,7 +166,7 @@ export function TransformationsContent() {
                 ...t,
                 name: formData.name,
                 quantity: formData.quantity,
-                dollarRate: formData.dollarRate,
+                productCost: formData.productCost,
                 sellingPrice: formData.sellingPrice,
                 isNetProfit: formData.isNetProfit,
               }
@@ -178,7 +178,7 @@ export function TransformationsContent() {
       setFormData({
         name: "",
         quantity: 0,
-        dollarRate: 0,
+        productCost: 0,
         sellingPrice: 0,
         isNetProfit: false,
       })
@@ -218,11 +218,19 @@ export function TransformationsContent() {
   })
 
   // Calculate totals based on filtered transformations
-  const totalSellingPrice = filteredTransformations.reduce((sum, t) => sum + (t.sellingPrice || 0), 0)
-  const totalCostPriceInDollar = filteredTransformations.reduce(
-    (sum, t) => sum + (t.dollarRate * t.quantity || 0),
-    0
-  )
+  // DO NOT round during accumulation - only round final result for display
+  // This ensures accurate calculations for decimal numbers like 0.85
+  const totalSellingPrice = filteredTransformations.reduce((sum, t) => {
+    const value = Number(t.sellingPrice) || 0
+    return sum + value
+  }, 0)
+  
+  const totalProductCost = filteredTransformations.reduce((sum, t) => {
+    const productCost = Number(t.productCost) || 0
+    const quantity = Number(t.quantity) || 0
+    const cost = productCost * quantity
+    return sum + cost
+  }, 0)
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
@@ -415,14 +423,14 @@ export function TransformationsContent() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="dollarRate">Dollar Rate (Cost per unit in $)</Label>
+                <Label htmlFor="productCost">Product Cost</Label>
                 <Input
-                  id="dollarRate"
+                  id="productCost"
                   type="number"
                   step="0.01"
-                  value={formData.dollarRate}
+                  value={formData.productCost}
                   onChange={(e) =>
-                    setFormData({ ...formData, dollarRate: parseFloat(e.target.value) || 0 })
+                    setFormData({ ...formData, productCost: parseFloat(e.target.value) || 0 })
                   }
                   required
                 />
@@ -501,14 +509,14 @@ export function TransformationsContent() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-dollarRate">Dollar Rate (Cost per unit in $)</Label>
+                <Label htmlFor="edit-productCost">Product Cost</Label>
                 <Input
-                  id="edit-dollarRate"
+                  id="edit-productCost"
                   type="number"
                   step="0.01"
-                  value={formData.dollarRate}
+                  value={formData.productCost}
                   onChange={(e) =>
-                    setFormData({ ...formData, dollarRate: parseFloat(e.target.value) || 0 })
+                    setFormData({ ...formData, productCost: parseFloat(e.target.value) || 0 })
                   }
                   required
                 />
@@ -589,7 +597,7 @@ export function TransformationsContent() {
                     <th className="text-left p-3 font-semibold text-gray-700 text-sm">Date</th>
                     <th className="text-left p-3 font-semibold text-gray-700 text-sm">Name</th>
                     <th className="text-right p-3 font-semibold text-gray-700 text-sm">Quantity</th>
-                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Dollar Rate</th>
+                    <th className="text-right p-3 font-semibold text-gray-700 text-sm">Product Cost</th>
                     <th className="text-right p-3 font-semibold text-gray-700 text-sm">Selling Price</th>
                     <th className="text-center p-3 font-semibold text-gray-700 text-sm">Net Profit</th>
                     <th className="text-center p-3 font-semibold text-gray-700 text-sm">Actions</th>
@@ -612,7 +620,7 @@ export function TransformationsContent() {
                       <td className="p-3 text-gray-700 text-sm">{formatDate(transformation.date)}</td>
                       <td className="p-3 font-medium text-gray-900 text-sm">{transformation.name}</td>
                       <td className="text-right p-3 text-gray-700 text-sm">{transformation.quantity.toFixed(2)}</td>
-                      <td className="text-right p-3 text-gray-700 text-sm">${transformation.dollarRate.toFixed(2)}</td>
+                      <td className="text-right p-3 text-gray-700 text-sm">{(transformation.productCost * transformation.quantity).toFixed(2)}</td>
                       <td className="text-right p-3 font-semibold text-gray-900 text-sm">{transformation.sellingPrice.toFixed(2)}</td>
                       <td className="text-center p-3">
                         {transformation.isNetProfit ? (
@@ -650,6 +658,7 @@ export function TransformationsContent() {
               </table>
             </div>
           )}
+          
         </CardContent>
       </Card>
 
@@ -666,14 +675,11 @@ export function TransformationsContent() {
                 {totalSellingPrice.toFixed(2)}
               </Badge>
             </div>
-            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-2 border-amber-300 shadow-md">
-              <p className="text-xs sm:text-sm font-medium text-slate-700">Total Cost Price (Dollar)</p>
-              <div className="flex items-center justify-center gap-2 bg-white/60 rounded-lg p-2 sm:p-3 border border-amber-200">
-                <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" />
-                <Badge variant="outline" className="text-lg sm:text-xl px-3 sm:px-5 py-2 sm:py-3 border-2 border-amber-400 bg-amber-50 text-amber-900 font-bold">
-                  {totalCostPriceInDollar.toFixed(2)}
-                </Badge>
-              </div>
+            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+              <p className="text-xs sm:text-sm font-medium text-slate-600">Total Product Cost</p>
+              <Badge variant="default" className="text-lg sm:text-xl px-4 sm:px-5 py-2 sm:py-3 w-full justify-center">
+                {totalProductCost.toFixed(2)}
+              </Badge>
             </div>
           </div>
         </CardContent>

@@ -14,7 +14,7 @@ export async function addTransformation(date: string, data: TransformationFormDa
       date,
       product_name: data.name,
       quantity: data.quantity,
-      dollar_rate: data.dollarRate,
+      product_cost: data.productCost,
       selling_price: data.sellingPrice,
       is_net_profit: data.isNetProfit || false,
     })
@@ -64,7 +64,7 @@ export async function getTransformationsByDate(date: string) {
     date: item.date,
     name: item.product_name,
     quantity: parseFloat(item.quantity?.toString() || "0"),
-    dollarRate: parseFloat(item.dollar_rate?.toString() || "0"),
+    productCost: parseFloat(item.product_cost?.toString() || "0"),
     sellingPrice: parseFloat(item.selling_price?.toString() || "0"),
     isNetProfit: item.is_net_profit || false,
     created_at: item.created_at,
@@ -82,7 +82,7 @@ export async function updateTransformation(id: string, data: TransformationFormD
     .update({
       product_name: data.name,
       quantity: data.quantity,
-      dollar_rate: data.dollarRate,
+      product_cost: data.productCost,
       selling_price: data.sellingPrice,
       is_net_profit: data.isNetProfit || false,
     })
@@ -102,18 +102,27 @@ export async function getTransformationTotalsByDate(date: string) {
   
   const { data, error } = await supabase
     .from("daily_transformations")
-    .select("selling_price, dollar_rate, quantity")
+    .select("selling_price, product_cost, quantity")
     .eq("date", date)
 
   if (error) {
     return { success: false, error: error.message, totals: null }
   }
 
+  // DO NOT round during accumulation - only round final result for display
+  // This ensures accurate calculations for decimal numbers like 0.85
   const totals = (data || []).reduce(
-    (acc, item) => ({
-      totalSellingPrice: acc.totalSellingPrice + (parseFloat(item.selling_price.toString()) || 0),
-      totalCostPriceInDollar: acc.totalCostPriceInDollar + (parseFloat(item.dollar_rate.toString()) * parseFloat(item.quantity.toString()) || 0),
-    }),
+    (acc, item) => {
+      const sellingPrice = Number(item.selling_price || 0)
+      const productCost = Number(item.product_cost || 0)
+      const quantity = Number(item.quantity || 0)
+      const costPrice = productCost * quantity
+      
+      return {
+        totalSellingPrice: acc.totalSellingPrice + sellingPrice,
+        totalCostPriceInDollar: acc.totalCostPriceInDollar + costPrice,
+      }
+    },
     {
       totalSellingPrice: 0,
       totalCostPriceInDollar: 0,
@@ -158,7 +167,7 @@ export async function getTransformationsByDateRange(startDate: string, endDate: 
     date: item.date,
     name: item.product_name,
     quantity: parseFloat(item.quantity?.toString() || "0"),
-    dollarRate: parseFloat(item.dollar_rate?.toString() || "0"),
+    productCost: parseFloat(item.product_cost?.toString() || "0"),
     sellingPrice: parseFloat(item.selling_price?.toString() || "0"),
     isNetProfit: item.is_net_profit || false,
     created_at: item.created_at,
@@ -175,7 +184,7 @@ export async function getTransformationTotalsByDateRange(startDate: string, endD
   
   const { data, error } = await supabase
     .from("daily_transformations")
-    .select("selling_price, dollar_rate, quantity")
+    .select("selling_price, product_cost, quantity")
     .gte("date", formattedStartDate)
     .lte("date", formattedEndDate)
 
@@ -183,11 +192,20 @@ export async function getTransformationTotalsByDateRange(startDate: string, endD
     return { success: false, error: error.message, totals: null }
   }
 
+  // DO NOT round during accumulation - only round final result for display
+  // This ensures accurate calculations for decimal numbers like 0.85
   const totals = (data || []).reduce(
-    (acc, item) => ({
-      totalSellingPrice: acc.totalSellingPrice + (parseFloat(item.selling_price.toString()) || 0),
-      totalCostPriceInDollar: acc.totalCostPriceInDollar + (parseFloat(item.dollar_rate.toString()) * parseFloat(item.quantity.toString()) || 0),
-    }),
+    (acc, item) => {
+      const sellingPrice = Number(item.selling_price || 0)
+      const productCost = Number(item.product_cost || 0)
+      const quantity = Number(item.quantity || 0)
+      const costPrice = productCost * quantity
+      
+      return {
+        totalSellingPrice: acc.totalSellingPrice + sellingPrice,
+        totalCostPriceInDollar: acc.totalCostPriceInDollar + costPrice,
+      }
+    },
     {
       totalSellingPrice: 0,
       totalCostPriceInDollar: 0,
@@ -243,7 +261,7 @@ export async function getAllTransformations() {
     date: item.date,
     name: item.product_name,
     quantity: parseFloat(item.quantity?.toString() || "0"),
-    dollarRate: parseFloat(item.dollar_rate?.toString() || "0"),
+    productCost: parseFloat(item.product_cost?.toString() || "0"),
     sellingPrice: parseFloat(item.selling_price?.toString() || "0"),
     isNetProfit: item.is_net_profit || false,
     created_at: item.created_at,

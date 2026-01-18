@@ -191,7 +191,6 @@ export function DashboardContent() {
   }
 
   // Calculate totals
-  const totalCostPriceInTL = transformationTotals.totalCostPriceInDollar * dollarToTLRate
   const netTotal = transformationTotals.totalSellingPrice + totalParanizSales
   
   // Calculate net total with cash and expenses: netTotal + cashInBoxYesterday - totalExpenses
@@ -462,7 +461,7 @@ export function DashboardContent() {
           <CardTitle>Totals</CardTitle>
         </CardHeader>
         <CardContent className="mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="relative p-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-shadow">
               <div className="absolute top-4 right-4">
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -471,18 +470,6 @@ export function DashboardContent() {
               </div>
               <p className="text-xs font-medium text-gray-600 mb-2">Total Selling Price</p>
               <p className="text-2xl font-bold text-gray-900">{transformationTotals.totalSellingPrice.toFixed(2)}</p>
-            </div>
-            <div className="relative p-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-shadow">
-              <div className="absolute top-4 right-4">
-                <DollarSign className="h-6 w-6 text-warning" />
-              </div>
-              <p className="text-xs font-medium text-gray-600 mb-2">Total Cost Price (Dollar)</p>
-              <p className="text-2xl font-bold text-gray-900">${transformationTotals.totalCostPriceInDollar.toFixed(2)}</p>
-              {dollarToTLRate > 0 && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {totalCostPriceInTL.toFixed(2)} TL
-                </p>
-              )}
             </div>
             <div className="relative p-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-shadow">
               <div className="absolute top-4 right-4">
@@ -506,17 +493,11 @@ export function DashboardContent() {
           
           {/* Net Total Calculation */}
           <div className="mt-6 pt-6 border-t border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-5 rounded-lg border border-gray-200 bg-white">
                 <p className="text-sm font-medium text-gray-600 mb-1">Net Total</p>
                 <p className="text-xs text-gray-500 mb-3">(Selling Price + Paraniz Sales)</p>
                 <p className="text-2xl font-bold text-gray-900">{netTotal.toFixed(2)}</p>
-              </div>
-              
-              <div className="p-5 rounded-lg border border-gray-200 bg-white">
-                <p className="text-sm font-medium text-gray-600 mb-1">Total Cost Price (TL)</p>
-                <p className="text-xs text-gray-500 mb-3">(Cost × Dollar Rate)</p>
-                <p className="text-2xl font-bold text-gray-900">{totalCostPriceInTL.toFixed(2)} TL</p>
               </div>
               
               <div className="p-5 rounded-lg border border-gray-200 bg-white">
